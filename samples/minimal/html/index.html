@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Minimal SimplSale form page</title>
+
+    <!-- This page shows the minimum fields necessary for SimplSale
+         form pages, and shows how its built-in hooks work for showing
+         errors and using simple AJAX. -->
+
+    <link rel="stylesheet" type="text/css" href="css/master.css"></link>
+
+    <!-- Include the SimplSale AJAX helpers. -->
+    <script type="text/javascript" src="../../jquery.js"></script>
+    <script type="text/javascript" src="../../ss-ajax.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+          SimplSale.syncZIP('billing_zip', 'billing_city', 'billing_state');
+      });
+    </script>
+
+  </head>
+
+  <body>
+    <h1>Minimal SimplSale form page</h1>
+
+    <form method="post" action="" id="simplsale-form">
+
+      <!-- The form on this page always posts to this page
+           itself. Additionally, it must have the "simplsale-form" ID
+           so it can be found by various parts of both the client and
+           server side. -->
+
+      <div>
+	<span class="errors" id="form-errors" />
+      </div>
+
+      <div>
+	<label for="billing_amount">Billing Amount</label>
+	<select name="billing_amount" class="required">
+	  <option value="">(Select one)</option>
+	  <option value="40.00 option 1">Option 1 ($40.00)</option>
+	  <option value="80.00 option 2">Option 2 ($80.00)</option>
+	</select>
+      </div>
+
+      <div>
+	<label for="billing_email">Billing Email Address</label>
+	<input type="text" name="billing_email" class="required" value="" />
+	<span class="errors" id="billing_email-errors" />
+      </div>
+
+      <div>
+	<label for="billing_name">Billing Name (as it appears on card)</label>
+	<input type="text" name="billing_name" class="required" value="" />
+	<span class="errors" id="billing_name-errors" />
+      </div>
+
+      <div>
+	<label for="billing_street">Billing Street Address</label>
+	<input type="text" name="billing_street" class="required" value="" />
+	<span class="errors" id="billing_street-errors" />
+      </div>
+
+      <div>
+	<label for="billing_zip">Billing ZIP code</label>
+	<input type="text" name="billing_zip" class="required" value="" />
+	<span class="errors" id="billing_zip-errors" />
+      </div>
+
+      <!-- 'billing_city' and 'billing_state' are not required fields,
+           but will be filled in automatically when ZIP code is
+           changed. -->
+
+      <div>
+	<label for="billing_city">Billing City</label>
+	<input type="text" name="billing_city" value="" />
+      </div>
+
+      <div>
+	<label for="billing_state">Billing State</label>
+	<input type="text" name="billing_state" value="" />
+      </div>
+
+      <div>
+	<label for="billing_card_number">Card Number</label>
+	<input type="text" name="name" class="required" value="" />
+	<span class="errors" id="billing_card_number-errors" />
+      </div>
+
+      <div>
+	<label for="billing_expiration_month">Card Expiration Date</label>
+	<select name="billing_expiration_month" class="required">
+	  <!-- This will be filled in for you. -->
+	  <option value="01">01 (January)</option>
+	</select>
+	<select name="billing_expiration_year" class="required">
+	  <!-- This will also be filled in for you. -->
+	  <option value="09">09 (2009)</option>
+	</select>
+	<span class="errors" id="billing_expiration-errors" />
+      </div>
+
+      <div>
+	<input type="submit" name="submit" value="Submit" />
+      </div>
+    </form>
+  </body>
+
+</html>

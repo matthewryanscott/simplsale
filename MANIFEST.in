@@ -1,0 +1,2 @@
+recursive-include simplsale/public *
+recursive-include simplsale/templates *

@@ -1,0 +1,27 @@
+/* master.css */
+/* (Do not change first line; it is used for unit testing. */
+
+h1 {
+    background-color: #202020;
+    color: white;
+}
+
+form div {
+    margin-bottom: 1em;
+    margin-left: 22em;
+}
+
+form div label {
+    margin-left: -22em;
+    float: left;
+    width: 20em;
+    text-align: right;
+}
+
+span.errors {
+    color: red;
+}
+
+.required {
+    background-color: #ffffbb;
+}

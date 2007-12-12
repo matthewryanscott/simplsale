@@ -1,0 +1,18 @@
+From: SimplSale-test@3purple.com
+To: ${billing_email}
+Subject: SimplSale minimal - sale # ${transaction_number}
+
+The SimplTest minimal sale completed.
+
+The transaction number is ${transaction_number}.
+
+Billing amount was ${billing_amount}.
+
+Details:
+
+Billing Street: ${billing_street}
+Billing City: ${billing_city}
+BIlling State: ${billing_state}
+Billing ZIP: ${billing_zip}
+Billing Card No.: ${billing_card_number}
+
