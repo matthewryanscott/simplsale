@@ -58,7 +58,10 @@ class SaleController(BaseController):
             for name in h.field_names(form, required=True):
                 if name.startswith('billing_expiration_'):
                     continue
-                if values[name] == '':
+                value = values[name]
+                if (value == ''
+                    or (name == 'billing_zip' and not h.is_valid_zip(value))
+                    ):
                     # Set form errors if there are empty required
                     # fields.
                     values_ok = False

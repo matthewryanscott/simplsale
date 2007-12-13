@@ -4,11 +4,15 @@ Consists of functions to typically be used within templates, but also
 available to Controllers. This module is available to both as 'h'.
 """
 import datetime
+import re
 
 from lxml.cssselect import CSSSelector
 from lxml.etree import Element
 
 from webhelpers import *
+
+
+ZIP_CODE_RE = re.compile(r'^\d{5}$')
 
 
 def fill_in_expiration_months(select):
@@ -113,3 +117,9 @@ def set_field_value(form, name, value):
         for o in options:
             if o.attrib['value'] == value:
                 o.attrib['selected'] = 'selected'
+
+
+def is_valid_zip(zipcode):
+    """Return `True` if `zipcode` is a 5-digit number."""
+    return ZIP_CODE_RE.match(zipcode) is not None
+
