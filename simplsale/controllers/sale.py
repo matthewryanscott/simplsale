@@ -4,6 +4,10 @@ import logging
 from lxml.cssselect import CSSSelector
 from lxml.etree import HTML, tounicode
 
+from simplejson import loads
+
+from ziplookup.data.zipcode import get_zipcode_info
+
 from simplsale.lib.base import *
 from simplsale.saletemplate import SaleTemplate
 
@@ -55,16 +59,19 @@ class SaleController(BaseController):
                 values[name] = request.params.get(name, '').strip()
             # Check to make sure all required fields are filled in.
             values_ok = True
+            zip_is_valid = True
             for name in h.field_names(form, required=True):
                 if name.startswith('billing_expiration_'):
                     continue
                 value = values[name]
-                if (value == ''
-                    or (name == 'billing_zip' and not h.is_valid_zip(value))
-                    ):
+                if value == '':
                     # Set form errors if there are empty required
                     # fields.
                     values_ok = False
+                elif name == 'billing_zip' and not h.is_valid_zip(value):
+                    # Special handling for ZIP codes, to determine
+                    # validity.
+                    zip_is_valid = values_ok = False
                 else:
                     # Remove field errors for non-empty required
                     # fields, and set their values to what the user
@@ -80,6 +87,17 @@ class SaleController(BaseController):
                 h.remove_field_errors(form, 'billing_expiration')
             h.set_field_value(form, 'billing_expiration_month', month)
             h.set_field_value(form, 'billing_expiration_year', year)
+            # Resolve ZIP codes if optional city and state not
+            # completely filled in.
+            if (zip_is_valid
+                and (values.get('billing_city', None) == ''
+                     or values.get('billing_state', None) == ''
+                     )):
+                info = loads(get_zipcode_info(str(values['billing_zip'])))
+                values['billing_city'] = info['city']
+                values['billing_state'] = info['state']
+                h.set_field_value(form, 'billing_city', info['city'])
+                h.set_field_value(form, 'billing_state', info['state'])
             # Finish up.
             if not values_ok:
                 h.set_form_errors(
