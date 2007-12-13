@@ -46,6 +46,7 @@ class SaleController(BaseController):
             h.set_form_errors(form, None)
             # Also remove any field errors.
             h.remove_field_errors(form, *h.field_names(form))
+            h.remove_field_errors(form, 'billing_expiration')
         # POST-specific stuff.
         elif request.method == 'POST':
             # Get the values for all of the fields.
@@ -54,8 +55,9 @@ class SaleController(BaseController):
                 values[name] = request.params.get(name, '').strip()
             # Check to make sure all required fields are filled in.
             values_ok = True
-            field_errors = {}
             for name in h.field_names(form, required=True):
+                if name.startswith('billing_expiration_'):
+                    continue
                 if values[name] == '':
                     # Set form errors if there are empty required
                     # fields.
@@ -65,7 +67,17 @@ class SaleController(BaseController):
                     # fields, and set their values to what the user
                     # gave.
                     h.remove_field_errors(form, name)
-                    h.set_field_value(form, name, values[name])
+                h.set_field_value(form, name, values[name])
+            # Handle billing_expiration_ differently.
+            month = values['billing_expiration_month']
+            year = values['billing_expiration_year']
+            if month == '' or year == '':
+                values_ok = False
+            else:
+                h.remove_field_errors(form, 'billing_expiration')
+            h.set_field_value(form, 'billing_expiration_month', month)
+            h.set_field_value(form, 'billing_expiration_year', year)
+            # Finish up.
             if not values_ok:
                 h.set_form_errors(
                     form, 'Required fields are missing.  See below.')

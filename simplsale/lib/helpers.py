@@ -70,36 +70,28 @@ def set_form_errors(form, error_text):
             e.text = error_text
 
 
-def field_names(form, required=False):
+def field_names(form, required=''):
     """Return the names of the fields in `form`.
 
     Returns all names if `required` is `False`, or only the names of
     required fields if `required` is `True`.
-
-    Takes care to provide a `billing_expiration` name if both the
-    month and year fields are present for that field.
     """
-    elements = CSSSelector('input[type!="submit"], select')(form)
+    if required:
+        required = '.required'
+    elements = CSSSelector('input[type!="submit"]%s, select%s'
+                           % (required, required))(form)
     names = []
     for e in elements:
         name = e.attrib.get('name', None)
         if name is not None:
             names.append(name)
-    if ('billing_expiration_month' in names
-        and 'billing_expiration_year' in names
-        and not 'billing_expiration' in names
-        ):
-        names.append('billing_expiration')
     return names
 
 
 def remove_field_errors(form, *names):
     """Remove field error elements for each named field in `form`."""
     for name in names:
-        if name.startswith('billing_expiration'):
-            error_name = 'billing_expiration-errors'
-        else:
-            error_name = name + '-errors'
+        error_name = name + '-errors'
         errors = CSSSelector('[id$="%s"]' % error_name)(form)
         for e in errors:
             e.getparent().remove(e)

@@ -5,6 +5,8 @@ from lxml.etree import HTML, XPath, tounicode
 
 from simplsale.tests import *
 
+EXP_YEAR = str(date.today().year + 1)[-2:]
+
 class TestSaleController(TestController):
 
     def _minimal_index(self):
@@ -87,7 +89,6 @@ class TestSaleController(TestController):
         fields['billing_zip'][0].value = '90210'
         fields['billing_state'][0].value = 'CA'
         fields['billing_expiration_month'][0].value = '06'
-        fields['billing_expiration_year'][0].value = '09'
         # Submit the form.
         response = form.submit()
         form = response.forms[0]
@@ -100,7 +101,7 @@ class TestSaleController(TestController):
         # fields with missing values.
         def required_empty(*args):
             for name in args:
-                if name.startswith('billing_expiration'):
+                if name.startswith('billing_expiration_'):
                     error_name = 'billing_expiration-errors'
                 else:
                     error_name = name + '-errors'
@@ -115,11 +116,30 @@ class TestSaleController(TestController):
             # billing_city is not required
             'billing_card_number',
             )
+        # In this case, since we treat the expiration differently for
+        # the error field, look for the month having a value, the year
+        # not having a value, and the error showing up.
+        def has_errors_and_values(month, year):
+            errors = CSSSelector('#billing_expiration-errors')(doc)
+            assert len(errors) == 1
+            assert errors[0].text != ''
+            m = form.fields['billing_expiration_month'][0]
+            assert m.value == month
+            y = form.fields['billing_expiration_year'][0]
+            assert y.value == year
+        has_errors_and_values('06', '')
+        # Fill in the year but not the month, and test again.
+        form.fields['billing_expiration_month'][0].value = ''
+        form.fields['billing_expiration_year'][0].value = EXP_YEAR
+        response = form.submit()
+        form = response.forms[0]
+        doc = HTML(response.body)
+        has_errors_and_values('', EXP_YEAR)
         # Check for lack of field errors for required fields with
         # values.
         def required_ok(**kw):
             for name, expected_value in kw.items():
-                if name.startswith('billing_expiration'):
+                if name.startswith('billing_expiration_'):
                     error_name = 'billing_expiration-errors'
                 else:
                     error_name = name + '-errors'
@@ -133,6 +153,4 @@ class TestSaleController(TestController):
             billing_name = 'Some Name',
             billing_zip = '90210',
             # billing_state is not required
-            billing_expiration_month = '06',
-            billing_expiration_year = '09',
             )
