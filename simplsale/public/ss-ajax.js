@@ -37,6 +37,14 @@ SimplSale = function () {
 	    required.change(update).keyup(update);
 	    // Update it now to reflect current state.
 	    update();
+	    // Disable submit button when it's clicked, and change its
+	    // text to "Please Wait..."
+	    form.submit(function () {
+		submitButton.attr({
+		    value: 'Please Wait...',
+		    disabled: true
+		});
+	    });
 	}
     };
 }();

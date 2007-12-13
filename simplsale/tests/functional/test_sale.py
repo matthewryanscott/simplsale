@@ -5,11 +5,13 @@ from lxml.etree import HTML, XPath, tounicode
 
 from simplsale.tests import *
 
+
 EXP_YEAR = str(date.today().year + 1)[-2:]
+
 
 class TestSaleController(TestController):
 
-    def _minimal_index(self):
+    def _index(self):
         response = self.app.get(url_for(
             controller='sale',
             sale_template='minimal',
@@ -22,7 +24,7 @@ class TestSaleController(TestController):
 
     def test_proper_document(self):
         """DTDs and so forth are properly output."""
-        response = self._minimal_index()
+        response = self._index()
         # DTD is in the body.
         assert 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd' in response.body
         # Empty scripts are closed by </script>, and not using <script ... />
@@ -30,14 +32,14 @@ class TestSaleController(TestController):
 
     def test_new_no_form_errors(self):
         """With new form, no form errors are present."""
-        response = self._minimal_index()
+        response = self._index()
         doc = HTML(response.body)
         selector = CSSSelector('#form-errors')
         assert selector(doc) == []
         
     def test_new_no_field_errors(self):
         """With new form, no field errors are present."""
-        response = self._minimal_index()
+        response = self._index()
         doc = HTML(response.body)
         for name in ['billing_email', 'billing_name', 'billing_street',
                      'billing_zip', 'billing_card_number',
@@ -47,7 +49,7 @@ class TestSaleController(TestController):
 
     def test_new_expiration_field_values(self):
         """Expiration fields should contain valid values to select from."""
-        response = self._minimal_index()
+        response = self._index()
         form = response.forms[0]
         select_month = form.fields['billing_expiration_month'][0]
         assert select_month.options == [
@@ -80,7 +82,7 @@ class TestSaleController(TestController):
         """Empty values in required fields result in errors for those
         fields filled in, and returning the index page with a
         partially-complete form."""
-        response = self._minimal_index()
+        response = self._index()
         # Partially fill in the form.
         form = response.forms[0]
         fields = form.fields
@@ -154,3 +156,48 @@ class TestSaleController(TestController):
             billing_zip = '90210',
             # billing_state is not required
             )
+
+    def test_post_bad_zipcode(self):
+        """When a ZIP code is given that is not five digits, the form
+        is shown again and the ZIP code field shows an error."""
+        response = self._index()
+        form = response.forms[0]
+        # Fill in all required fields.
+        form.fields['billing_amount'][0].value = '40.00 option 1'
+        form.fields['billing_email'][0].value = 'foo@bar.com'
+        form.fields['billing_name'][0].value = 'name o. card'
+        form.fields['billing_street'][0].value = '123 fake st'
+        form.fields['billing_zip'][0].value = '8230'
+        form.fields['billing_card_number'][0].value = '5105105105105100'
+        form.fields['billing_expiration_month'][0].value = '06'
+        form.fields['billing_expiration_year'][0].value = EXP_YEAR
+        # Submit it and check for errors.
+        response = form.submit()
+        form = response.forms[0]
+        doc = HTML(response.body)
+        # Check form-errors for presence of error text.
+        form_errors = CSSSelector('#form-errors')(doc)
+        assert len(form_errors) == 1
+        assert form_errors[0].text != ''
+        # Check ZIP code for presence of error text.
+        zip_errors = CSSSelector('#billing_zip-errors')(doc)
+        assert len(zip_errors) == 1
+        assert zip_errors[0].text != ''
+
+    def test_post_commerce_success(self):
+        """When valid values are POST-ed, and the commercial
+        transaction succeeds, redirect to the success page for the
+        transaction."""
+
+    def test_post_commerce_failure(self):
+        """When valid values are POST-ed, but the commercial
+        transaction fails, the form is shown again with an error
+        message regarding the failure."""
+
+    def test_post_success_persists(self):
+        """When a transaction succeeds, the success page is shown at a
+        unique URL that may be retrieved by GET-ing the same URL
+        again."""
+
+    def test_post_success_expires(self):
+        """Success pages eventually expire after a number of seconds."""
