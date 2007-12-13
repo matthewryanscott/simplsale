@@ -21,7 +21,6 @@ class TestSaleController(TestController):
     def test_proper_document(self):
         """DTDs and so forth are properly output."""
         response = self._minimal_index()
-        print response.body
         # DTD is in the body.
         assert 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd' in response.body
         # Empty scripts are closed by </script>, and not using <script ... />
@@ -81,13 +80,59 @@ class TestSaleController(TestController):
         partially-complete form."""
         response = self._minimal_index()
         # Partially fill in the form.
-        
+        form = response.forms[0]
+        fields = form.fields
+        fields['billing_amount'][0].value = '40.00 option 1'
+        fields['billing_name'][0].value = 'Some Name'
+        fields['billing_zip'][0].value = '90210'
+        fields['billing_state'][0].value = 'CA'
+        fields['billing_expiration_month'][0].value = '06'
+        fields['billing_expiration_year'][0].value = '09'
         # Submit the form.
-        
+        response = form.submit()
+        form = response.forms[0]
+        doc = HTML(response.body)
         # Check form-errors for presence of error text.
-        
+        form_errors = CSSSelector('#form-errors')(doc)
+        assert len(form_errors) == 1
+        assert form_errors[0].text != ''
         # Check field errors for presence of error text for required
         # fields with missing values.
-
+        def required_empty(*args):
+            for name in args:
+                if name.startswith('billing_expiration'):
+                    error_name = 'billing_expiration-errors'
+                else:
+                    error_name = name + '-errors'
+                errors = CSSSelector('#' + error_name)(doc)
+                assert len(errors) == 1
+                assert errors[0].text != ''
+                field = form.fields[name][0]
+                assert field.value == ''
+        required_empty(
+            'billing_email',
+            'billing_street',
+            # billing_city is not required
+            'billing_card_number',
+            )
         # Check for lack of field errors for required fields with
         # values.
+        def required_ok(**kw):
+            for name, expected_value in kw.items():
+                if name.startswith('billing_expiration'):
+                    error_name = 'billing_expiration-errors'
+                else:
+                    error_name = name + '-errors'
+                errors = CSSSelector('#' + error_name)(doc)
+                assert len(errors) == 0
+                field = form.fields[name][0]
+                print name, field.value, expected_value
+                assert field.value == expected_value
+        required_ok(
+            billing_amount = '40.00 option 1',
+            billing_name = 'Some Name',
+            billing_zip = '90210',
+            # billing_state is not required
+            billing_expiration_month = '06',
+            billing_expiration_year = '09',
+            )

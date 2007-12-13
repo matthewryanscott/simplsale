@@ -43,30 +43,41 @@
 	  <option value="40.00 option 1">Option 1 ($40.00)</option>
 	  <option value="80.00 option 2">Option 2 ($80.00)</option>
 	</select>
+	<span class="errors" id="billing_amount-errors">
+	  Please choose an option.
+	</span>
       </div>
 
       <div>
 	<label for="billing_email">Billing Email Address</label>
 	<input type="text" name="billing_email" class="required" value="" />
-	<span class="errors" id="billing_email-errors" />
+	<span class="errors" id="billing_email-errors">
+	  Please enter your email address.
+	</span>
       </div>
 
       <div>
 	<label for="billing_name">Billing Name (as it appears on card)</label>
 	<input type="text" name="billing_name" class="required" value="" />
-	<span class="errors" id="billing_name-errors" />
+	<span class="errors" id="billing_name-errors">
+	  Please enter your billing name.
+	</span>
       </div>
 
       <div>
 	<label for="billing_street">Billing Street Address</label>
 	<input type="text" name="billing_street" class="required" value="" />
-	<span class="errors" id="billing_street-errors" />
+	<span class="errors" id="billing_street-errors">
+	  Please enter your billing street address.
+	</span>
       </div>
 
       <div>
 	<label for="billing_zip">Billing ZIP code</label>
 	<input type="text" name="billing_zip" class="required" value="" />
-	<span class="errors" id="billing_zip-errors" />
+	<span class="errors" id="billing_zip-errors">
+	  Please enter your billing ZIP code.
+	</span>
       </div>
 
       <!-- 'billing_city' and 'billing_state' are not required fields,
@@ -85,8 +96,11 @@
 
       <div>
 	<label for="billing_card_number">Card Number</label>
-	<input type="text" name="name" class="required" value="" />
-	<span class="errors" id="billing_card_number-errors" />
+	<input type="text" name="billing_card_number" class="required" 
+	       value="" />
+	<span class="errors" id="billing_card_number-errors">
+	  Please enter your card number.
+	</span>
       </div>
 
       <div>
@@ -99,7 +113,9 @@
 	  <!-- This will also be filled in for you. -->
 	  <option value="09">09 (2009)</option>
 	</select>
-	<span class="errors" id="billing_expiration-errors" />
+	<span class="errors" id="billing_expiration-errors">
+	  Please select your complete card expiration date.
+	</span>
       </div>
 
       <div>

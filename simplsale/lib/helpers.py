@@ -12,10 +12,7 @@ from webhelpers import *
 
 
 def fill_in_expiration_months(select):
-    """Fill in expiration date month values in the given `select` element.
-
-    XXX: doctest
-    """
+    """Fill in expiration date month values in the given `select` element."""
     # First remove any children since they are just there to
     # help preview templates.
     for child in select.getchildren():
@@ -38,10 +35,7 @@ def fill_in_expiration_months(select):
 
 
 def fill_in_expiration_years(select):
-    """Fill in expiration date year values in the given `select` element.
-
-    XXX: doctest
-    """
+    """Fill in expiration date year values in the given `select` element."""
     # Remove existing children as above.
     for child in select.getchildren():
         select.remove(child)
@@ -60,10 +54,7 @@ def fill_in_expiration_years(select):
 
 
 def set_form_errors(form, error_text):
-    """Set the form-errors element's text in the form.
-
-    XXX: doctest
-    """
+    """Set the form-errors element's text in the form."""
     form_errors = CSSSelector('#form-errors')(form)
     if error_text is None:
         # Remove form-errors if there is no error to report.
@@ -79,13 +70,14 @@ def set_form_errors(form, error_text):
             e.text = error_text
 
 
-def field_names(form):
-    """Return the names of all of the fields in `form`.
+def field_names(form, required=False):
+    """Return the names of the fields in `form`.
+
+    Returns all names if `required` is `False`, or only the names of
+    required fields if `required` is `True`.
 
     Takes care to provide a `billing_expiration` name if both the
     month and year fields are present for that field.
-
-    XXX: doctest
     """
     elements = CSSSelector('input[type!="submit"], select')(form)
     names = []
@@ -101,21 +93,31 @@ def field_names(form):
     return names
 
 
-def update_field_errors(form, errors):
-    """Update the form error elements based on the errors dict given.
-
-    XXX: doctest
-    """
-    elements = CSSSelector('span[id$="-errors"]')(form)
-    for e in elements:
-        field_name = e.attrib['id'][:-7]          # Chop off '-errors'
-        if field_name in errors:
-            # Clear out the contents of the error element.
-            for c in e.getchildren():
-                e.remove(c)
-            # Insert the error text into the error element.
-            e.text = errors[field_name]
+def remove_field_errors(form, *names):
+    """Remove field error elements for each named field in `form`."""
+    for name in names:
+        if name.startswith('billing_expiration'):
+            error_name = 'billing_expiration-errors'
         else:
-            # Remove the error element entirely when there is no error
-            # for it.
+            error_name = name + '-errors'
+        errors = CSSSelector('[id$="%s"]' % error_name)(form)
+        for e in errors:
             e.getparent().remove(e)
+
+
+def set_field_value(form, name, value):
+    """Set the value of a form's field."""
+    inputs = CSSSelector('input[name="%s"]' % name)(form)
+    for e in inputs:
+        e.attrib['value'] = value
+    selects = CSSSelector('select[name="%s"]' % name)(form)
+    for e in selects:
+        options = CSSSelector('option')(e)
+        # Unselect any already-selected options.
+        for o in options:
+            if 'selected' in o.attrib:
+                del o.attrib['selected']
+        # Select the options that have the value.
+        for o in options:
+            if o.attrib['value'] == value:
+                o.attrib['selected'] = 'selected'
