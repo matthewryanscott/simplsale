@@ -25,3 +25,8 @@ span.errors {
 .required {
     background-color: #ffffbb;
 }
+
+#simplsale-commerce-notice {
+    color: #808080;
+    font-size: 75%;
+}

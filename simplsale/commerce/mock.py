@@ -6,6 +6,8 @@ CUR_CENTURY_YEAR = date.today().year % 100
 
 class MockCommerce(object):
 
+    notice = 'You are using the SimplSale "mock" commerce plugin.'
+
     SUCCESS = 0
     FAILURE = 1
 

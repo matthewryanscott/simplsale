@@ -13,7 +13,12 @@
   <body>
     <h1>Minimal SimplSale success page</h1>
 
-    <!-- All success pages must show a transaction number. -->
+    <!-- All success pages must show a transaction number. 
+	 
+	 XXX: Add tests to make sure incomplete templates don't get
+	 used. -->
+
+    <div id="simplsale-commerce-notice" />
 
     <p>Your transaction number is 
     <span id="transaction_number" />.</p>

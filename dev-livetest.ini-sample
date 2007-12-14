@@ -1,0 +1,39 @@
+#
+# SimplSale - Pylons testing environment configuration
+#
+# Uses an ACTUAL PayflowPro server via PyFlowPro.
+# Uses the TESTING PayflowPro server.
+#
+# The %(here)s variable will be replaced with the parent directory of this file
+#
+[DEFAULT]
+debug = true
+# Uncomment and replace with the address which should receive any error reports
+#email_to = you@yourdomain.com
+smtp_server = localhost
+error_email_from = paste@localhost
+
+[server:main]
+use = egg:Paste#http
+host = 0.0.0.0
+port = 5000
+
+[composit:main]
+use = config:development.ini
+
+# Add additional test specific configuration options as necessary.
+
+[app:ziplookup]
+use = egg:ZipLookup
+
+[app:simplsale]
+use = egg:SimplSale
+simplsale.sale_template_dir = %(here)s/samples
+simplsale.commerce = pyflowpro.test
+
+# Fill these out per your specific user information.
+
+simplsale.commerce.partner = verisign
+simplsale.commerce.vendor = ...
+simplsale.commerce.user = ...
+simplsale.commerce.password = ...

@@ -3,6 +3,7 @@ from datetime import date
 from lxml.cssselect import CSSSelector
 from lxml.etree import HTML, XPath, tounicode
 
+from simplsale.commerce.mock import MockCommerce
 from simplsale.tests import *
 
 
@@ -29,6 +30,15 @@ class TestSaleController(TestController):
         assert 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd' in response.body
         # Empty scripts are closed by </script>, and not using <script ... />
         assert '></script>' in response.body
+
+    def test_commerce_notice(self):
+        """Within unit tests, the banner for the 'mock' plugin appears
+        on the index page."""
+        response = self._index()
+        doc = HTML(response.body)
+        notices = CSSSelector('#simplsale-commerce-notice')(doc)
+        assert len(notices) == 1
+        assert notices[0].text == MockCommerce.notice
 
     def test_new_no_form_errors(self):
         """With new form, no form errors are present."""

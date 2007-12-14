@@ -21,7 +21,7 @@ def make_map():
                 'sale/:sale_template/',
                 controller='sale', action='index')
     map.connect('sale_success',
-                'sale/:sale_template/success/:transaction_number',
+                'sale/:sale_template/success-:transaction_number',
                 controller='sale', action='success')
 
     map.connect('salestatic',
