@@ -14,7 +14,8 @@ class SaleTemplate(object):
 
     def __new__(cls, name):
         """Return a new or cached SaleTemplate."""
-        sale_template_dir = abspath(pylons.config['sale_template_dir'])
+        sale_template_dir = abspath(
+            pylons.config['simplsale.sale_template_dir'])
         path = join(sale_template_dir, name)
         if path in _cache:
             return _cache[path]

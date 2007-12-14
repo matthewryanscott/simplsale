@@ -1,8 +1,11 @@
 """Pylons middleware initialization"""
+
 from paste.cascade import Cascade
 from paste.registry import RegistryManager
 from paste.urlparser import StaticURLParser
 from paste.deploy.converters import asbool
+
+import pkg_resources
 
 from pylons import config
 from pylons.error import error_template
@@ -32,6 +35,12 @@ def make_app(global_conf, full_stack=True, **app_conf):
     """
     # Configure the Pylons environment
     load_environment(global_conf, app_conf)
+
+    # SimplSale: Find the commerce class.
+    commerce_name = config['simplsale.commerce']
+    commerce_entrypoint = list(pkg_resources.iter_entry_points(
+        'simplsale.commerce', commerce_name))[0]
+    config['simplsale.commerce.class'] = commerce_entrypoint.load()
 
     # The Pylons WSGI app
     app = PylonsApp()

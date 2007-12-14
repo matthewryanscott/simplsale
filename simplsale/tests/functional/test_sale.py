@@ -228,7 +228,9 @@ class TestSaleController(TestController):
         form.fields['billing_expiration_month'][0].value = '06'
         form.fields['billing_expiration_year'][0].value = EXP_YEAR
         # Submit it and assume a redirection.
-        response = form.submit().follow()
+        response = form.submit()
+        assert response.status == 302
+        response = response.follow()
         doc = HTML(response.body)
         # Look for the signs of success.
         def text(id):
@@ -243,22 +245,33 @@ class TestSaleController(TestController):
         assert text('billing_zip') == '90210'
         assert text('billing_card_number') == '************5100'
 
-#     def test_post_commerce_failure(self):
-#         """When valid values are POST-ed, but the commercial
-#         transaction fails, the form is shown again with an error
-#         message regarding the failure."""
-#         response = self._index()
-#         form = response.forms[0]
-#         # Fill in all required fields.
-#         form.fields['billing_amount'][0].value = '40.00 option 1'
-#         form.fields['billing_email'][0].value = 'foo@bar.com'
-#         form.fields['billing_name'][0].value = 'name o. card'
-#         form.fields['billing_street'][0].value = '123 fake st'
-#         form.fields['billing_zip'][0].value = '8230'
-#         form.fields['billing_card_number'][0].value = '5105105105105100'
-#         form.fields['billing_expiration_month'][0].value = '06'
-#         form.fields['billing_expiration_year'][0].value = '01' # In the past.
-        
+    def test_post_commerce_failure(self):
+        """When valid values are POST-ed, but the commercial
+        transaction fails, the form is shown again with an error
+        message regarding the failure."""
+        response = self._index()
+        form = response.forms[0]
+        # Fill in all required fields.
+        form.fields['billing_amount'][0].value = '40.00 option 1'
+        form.fields['billing_email'][0].value = 'foo@bar.com'
+        form.fields['billing_name'][0].value = 'name o. card'
+        form.fields['billing_street'][0].value = '123 fake st'
+        form.fields['billing_zip'][0].value = '98230'
+        form.fields['billing_card_number'][0].value = '5105105105105100'
+        form.fields['billing_expiration_month'][0].value = '06'
+        # XXX: Cheat, pretend that we're the robot we are, and add 01
+        # as an option.
+        form.fields['billing_expiration_year'][0].options.append(('01', False))
+        form.fields['billing_expiration_year'][0].value = '01' # In the past.
+        # Submit it and check for errors.
+        response = form.submit()
+        assert response.status == 200
+        form = response.forms[0]
+        doc = HTML(response.body)
+        # Check form-errors for presence of error text.
+        form_errors = CSSSelector('#form-errors')(doc)
+        assert len(form_errors) == 1
+        assert form_errors[0].text != ''
 
 #     def test_post_success_persists(self):
 #         """When a transaction succeeds, the success page is shown at a

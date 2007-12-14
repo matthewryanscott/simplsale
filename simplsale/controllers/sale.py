@@ -4,6 +4,8 @@ import logging
 from lxml.cssselect import CSSSelector
 from lxml.etree import HTML, tounicode
 
+import pkg_resources
+
 from simplejson import loads
 
 from ziplookup.data.zipcode import get_zipcode_info
@@ -93,11 +95,15 @@ class SaleController(BaseController):
                 and (values.get('billing_city', None) == ''
                      or values.get('billing_state', None) == ''
                      )):
-                info = loads(get_zipcode_info(str(values['billing_zip'])))
-                values['billing_city'] = info['city']
-                values['billing_state'] = info['state']
-                h.set_field_value(form, 'billing_city', info['city'])
-                h.set_field_value(form, 'billing_state', info['state'])
+                try:
+                    info = loads(get_zipcode_info(str(values['billing_zip'])))
+                except KeyError:
+                    pass
+                else:
+                    values['billing_city'] = info['city']
+                    values['billing_state'] = info['state']
+                    h.set_field_value(form, 'billing_city', info['city'])
+                    h.set_field_value(form, 'billing_state', info['state'])
             # Finish up.
             if values_ok:
                 # Redirect to success page when everything is OK.
@@ -112,18 +118,31 @@ class SaleController(BaseController):
                 ba_price, ba_name = values['billing_amount'].split(' ', 1)
                 sanitized_values['billing_amount_name'] = ba_name
                 sanitized_values['billing_amount_price'] = ba_price
-                # XXX: Generate a dummy transaction number.
-                from random import randint
-                transaction_number = str(randint(100000, 999999))
-                sanitized_values['transaction_number'] = transaction_number
-                # Associate values with transaction number.
-                g.success_data[transaction_number] = sanitized_values
-                # Perform the redirection.
-                h.redirect_to(h.url_for(
-                    'sale_success',
-                    sale_template=sale_template,
-                    transaction_number=transaction_number,
-                    ))
+                values['billing_amount_price'] = ba_price
+                # Create and submit the commerce transaction.
+                CommerceClass = config['simplsale.commerce.class']
+                transaction = CommerceClass(config, values)
+                transaction.submit()    # Blocking.
+                if transaction.result is transaction.SUCCESS:
+                    # Successful transaction, proceed to redirect to
+                    # success page.
+                    sanitized_values['transaction_number'] = transaction.number
+                    # Associate values with transaction number.
+                    g.success_data[transaction.number] = sanitized_values
+                    # Perform the redirection.
+                    h.redirect_to(h.url_for(
+                        'sale_success',
+                        sale_template=sale_template,
+                        transaction_number=transaction.number,
+                        ))
+                elif transaction.result is transaction.FAILURE:
+                    # Failed transaction, continue with index page.
+                    h.set_form_errors(
+                        form,
+                        'We could not process your transaction. '
+                        'Please make sure that the information '
+                        'below is correct.  ("%s")' % transaction.result_text
+                        )
             else:
                 # Set form errors and continue with rendering the
                 # index page again.
