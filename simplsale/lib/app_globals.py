@@ -11,4 +11,6 @@ class Globals(object):
         initialization and is available during requests via the 'g'
         variable
         """
-        pass
+        self.success_data = {
+            # transaction_number: sanitized_value_dict,
+            }

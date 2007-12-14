@@ -212,36 +212,36 @@ class TestSaleController(TestController):
         form = response.forms[0]
         check_form()
 
-#     def test_post_commerce_success(self):
-#         """When valid values are POST-ed, and the commercial
-#         transaction succeeds, redirect to the success page for the
-#         transaction."""
-#         response = self._index()
-#         form = response.forms[0]
-#         # Fill in all required fields.
-#         form.fields['billing_amount'][0].value = '40.00 option 1'
-#         form.fields['billing_email'][0].value = 'foo@bar.com'
-#         form.fields['billing_name'][0].value = 'name o. card'
-#         form.fields['billing_street'][0].value = '123 fake st'
-#         form.fields['billing_zip'][0].value = '90210'
-#         form.fields['billing_card_number'][0].value = '5105105105105100'
-#         form.fields['billing_expiration_month'][0].value = '06'
-#         form.fields['billing_expiration_year'][0].value = EXP_YEAR
-#         # Submit it and assume a redirection.
-#         response = form.submit().follow()
-#         doc = HTML(response.body)
-#         # Look for the signs of success.
-#         def text(id):
-#             return CSSSelector('#' + id)(doc)[0].text
-#         assert text('transaction_number') != ''
-#         assert text('billing_amount_name') == 'option 1'
-#         assert text('billing_amount_price') == '40.00'
-#         assert text('billing_email') == 'foo@bar.com'
-#         assert text('billing_street') == '123 fake st'
-#         assert text('billing_city') == 'Beverly Hills'
-#         assert text('billing_state') == 'CA'
-#         assert text('billing_zip') == '90210'
-#         assert text('billing_card_number') == '************5100'
+    def test_post_commerce_success(self):
+        """When valid values are POST-ed, and the commercial
+        transaction succeeds, redirect to the success page for the
+        transaction."""
+        response = self._index()
+        form = response.forms[0]
+        # Fill in all required fields.
+        form.fields['billing_amount'][0].value = '40.00 option 1'
+        form.fields['billing_email'][0].value = 'foo@bar.com'
+        form.fields['billing_name'][0].value = 'name o. card'
+        form.fields['billing_street'][0].value = '123 fake st'
+        form.fields['billing_zip'][0].value = '90210'
+        form.fields['billing_card_number'][0].value = '5105105105105100'
+        form.fields['billing_expiration_month'][0].value = '06'
+        form.fields['billing_expiration_year'][0].value = EXP_YEAR
+        # Submit it and assume a redirection.
+        response = form.submit().follow()
+        doc = HTML(response.body)
+        # Look for the signs of success.
+        def text(id):
+            return CSSSelector('#' + id)(doc)[0].text
+        assert text('transaction_number') != ''
+        assert text('billing_amount_name') == 'option 1'
+        assert text('billing_amount_price') == '40.00'
+        assert text('billing_email') == 'foo@bar.com'
+        assert text('billing_street') == '123 fake st'
+        assert text('billing_city') == 'Beverly Hills'
+        assert text('billing_state') == 'CA'
+        assert text('billing_zip') == '90210'
+        assert text('billing_card_number') == '************5100'
 
 #     def test_post_commerce_failure(self):
 #         """When valid values are POST-ed, but the commercial

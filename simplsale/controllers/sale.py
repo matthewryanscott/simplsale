@@ -28,9 +28,9 @@ class SaleController(BaseController):
             # XXX: More elegant way to do this with Pylons?
             h.redirect_to(request.path_info + '/')
         else:
-            return self._index(sale_template)
+            return self.index_slash(sale_template)
 
-    def _index(self, sale_template):
+    def index_slash(self, sale_template):
         sale = SaleTemplate(sale_template)
         doc = HTML(sale.index())
         form = CSSSelector('form#simplsale-form')(doc)[0]
@@ -99,10 +99,43 @@ class SaleController(BaseController):
                 h.set_field_value(form, 'billing_city', info['city'])
                 h.set_field_value(form, 'billing_state', info['state'])
             # Finish up.
-            if not values_ok:
+            if values_ok:
+                # Redirect to success page when everything is OK.
+                # First, sanitize and process the values.
+                sanitized_values = values.copy()
+                # Obscure the card number.
+                cn = values['billing_card_number']
+                obscure_len = len(cn) - 4
+                obscured_cn = ('*' * obscure_len) + cn[obscure_len:]
+                sanitized_values['billing_card_number'] = obscured_cn
+                # Split the billing amount into price and name.
+                ba_price, ba_name = values['billing_amount'].split(' ', 1)
+                sanitized_values['billing_amount_name'] = ba_name
+                sanitized_values['billing_amount_price'] = ba_price
+                # XXX: Generate a dummy transaction number.
+                from random import randint
+                transaction_number = str(randint(100000, 999999))
+                sanitized_values['transaction_number'] = transaction_number
+                # Associate values with transaction number.
+                g.success_data[transaction_number] = sanitized_values
+                # Perform the redirection.
+                h.redirect_to(h.url_for(
+                    'sale_success',
+                    sale_template=sale_template,
+                    transaction_number=transaction_number,
+                    ))
+            else:
+                # Set form errors and continue with rendering the
+                # index page again.
                 h.set_form_errors(
-                    form, 'Required fields are missing.  See below.')
+                    form, 'Some fields are not complete.  See below.')
         return XHTML11_DTD + tounicode(doc, method='html')
 
     def success(self, sale_template, transaction_number):
-        return 'success %s %s' % (sale_template, transaction_number)
+        sale = SaleTemplate(sale_template)
+        doc = HTML(sale.success())
+        values = g.success_data[transaction_number]
+        for key, value in values.items():
+            for e in CSSSelector('#' + key)(doc):
+                e.text = value
+        return XHTML11_DTD + tounicode(doc, method='html')
