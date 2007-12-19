@@ -29,10 +29,11 @@ use = egg:ZipLookup
 [app:simplsale]
 use = egg:SimplSale
 simplsale.sale_template_dir = %(here)s/samples
-simplsale.commerce = pyflowpro.test
+simplsale.commerce = pyflowpro
 
 # Fill these out per your specific user information.
 
+simplsale.commerce.server = test-payflow.verisign.com
 simplsale.commerce.partner = verisign
 simplsale.commerce.vendor = ...
 simplsale.commerce.user = ...
