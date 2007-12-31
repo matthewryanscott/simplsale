@@ -34,6 +34,11 @@ setup(
     main = pylons.util:PylonsInstaller
 
     [simplsale.commerce]
-    mock = simplsale.plugins.mock:MockCommerce
+    mock = simplsale.plugins.commerce:MockCommerce
+
+    [simplsale.email]
+    inline = simplsale.plugins.email:InlineEmail
+    mock = simplsale.plugins.email:MockEmail
+    sendmail = simplsale.plugins.email:SendmailEmail
     """,
 )

@@ -15,4 +15,3 @@ Billing City: ${billing_city}
 BIlling State: ${billing_state}
 Billing ZIP: ${billing_zip}
 Billing Card No.: ${billing_card_number}
-

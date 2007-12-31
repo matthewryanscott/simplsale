@@ -2,6 +2,10 @@ from __future__ import with_statement
 
 from os.path import abspath, join
 
+from lxml.etree import HTML
+
+from mako.template import Template
+
 import pylons.config
 
 
@@ -30,18 +34,23 @@ class SaleTemplate(object):
         # Read the source of the template files right away.
         try:
             with open(join(self.path, 'html', 'index.html'), 'rb') as f:
-                self._index_html = f.read()
+                self._index_xml = HTML(f.read())
             with open(join(self.path, 'html', 'success.html'), 'rb') as f:
-                self._success_html = f.read()
+                self._success_xml = HTML(f.read())
             with open(join(self.path, 'receipt.txt'), 'rU') as f:
-                self._receipt_txt = f.read()
+                self._receipt_template = f.read()
             with open(join(self.path, 'record.txt'), 'rU') as f:
-                self._record_txt = f.read()
+                self._record_template = f.read()
         except IOError:
             raise KeyError('Template %r not found.' % name)
 
-    def index(self):
-        return self._index_html
+    def index_xml(self):
+        return self._index_xml
 
-    def success(self):
-        return self._success_html
+    def success_xml(self):
+        return self._success_xml
+
+    def receipt_text(self, **kw):
+        """Apply `kw` to the receipt template and return the rendered
+        text."""
+        return Template(self._receipt_template).render(**kw)

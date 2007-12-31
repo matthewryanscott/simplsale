@@ -2,7 +2,7 @@ from datetime import date
 import logging
 
 from lxml.cssselect import CSSSelector
-from lxml.etree import HTML, tounicode
+from lxml.etree import tounicode
 
 import pkg_resources
 
@@ -34,7 +34,7 @@ class SaleController(BaseController):
 
     def index_slash(self, sale_template):
         sale = SaleTemplate(sale_template)
-        doc = HTML(sale.index())
+        doc = sale.index_xml()
         self._apply_commerce_notice(doc)
         form = CSSSelector('form#simplsale-form')(doc)[0]
         # Fill in the expiration month and year fields if they use
@@ -153,7 +153,7 @@ class SaleController(BaseController):
 
     def success(self, sale_template, transaction_number):
         sale = SaleTemplate(sale_template)
-        doc = HTML(sale.success())
+        doc = sale.success_xml()
         self._apply_commerce_notice(doc)
         values = g.success_data[transaction_number]
         for key, value in values.items():

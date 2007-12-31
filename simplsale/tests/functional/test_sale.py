@@ -3,7 +3,7 @@ from datetime import date
 from lxml.cssselect import CSSSelector
 from lxml.etree import HTML, XPath, tounicode
 
-from simplsale.plugins.mock import MockCommerce
+from simplsale.plugins.commerce import MockCommerce
 from simplsale.tests import *
 
 
