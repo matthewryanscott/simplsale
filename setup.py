@@ -34,6 +34,6 @@ setup(
     main = pylons.util:PylonsInstaller
 
     [simplsale.commerce]
-    mock = simplsale.commerce.mock:MockCommerce
+    mock = simplsale.plugins.mock:MockCommerce
     """,
 )

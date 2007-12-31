@@ -6,3 +6,4 @@ dev-livetest.ini
 parts/*
 eggs/*
 develop-eggs/*
+bin/buildout

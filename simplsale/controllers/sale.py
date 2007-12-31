@@ -108,28 +108,28 @@ class SaleController(BaseController):
             # Finish up.
             if values_ok:
                 # Redirect to success page when everything is OK.
-                # First, sanitize and process the values.
-                sanitized_values = values.copy()
-                # Obscure the card number.
-                cn = values['billing_card_number']
-                obscure_len = len(cn) - 4
-                obscured_cn = ('*' * obscure_len) + cn[obscure_len:]
-                sanitized_values['billing_card_number'] = obscured_cn
-                # Split the billing amount into price and name.
+                # --- Unsanitized values ---
                 ba_price, ba_name = values['billing_amount'].split(' ', 1)
-                sanitized_values['billing_amount_name'] = ba_name
-                sanitized_values['billing_amount_price'] = ba_price
                 values['billing_amount_price'] = ba_price
                 # Create and submit the commerce transaction.
                 CommerceClass = config['simplsale.commerce.class']
                 transaction = CommerceClass(config, values)
                 transaction.submit()    # Blocking.
+                # --- Sanitize ---
+                values['billing_amount_name'] = ba_name
+                values['billing_amount_price'] = ba_price
+                # Obscure the card number.
+                cn = values['billing_card_number']
+                obscure_len = len(cn) - 4
+                obscured_cn = ('*' * obscure_len) + cn[obscure_len:]
+                values['billing_card_number'] = obscured_cn
+                # --- Sanitized values ---
                 if transaction.result is transaction.SUCCESS:
                     # Successful transaction, proceed to redirect to
                     # success page.
-                    sanitized_values['transaction_number'] = transaction.number
+                    values['transaction_number'] = transaction.number
                     # Associate values with transaction number.
-                    g.success_data[transaction.number] = sanitized_values
+                    g.success_data[transaction.number] = values
                     # Perform the redirection.
                     h.redirect_to(h.url_for(
                         'sale_success',

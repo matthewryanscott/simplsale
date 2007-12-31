@@ -3,7 +3,7 @@ from datetime import date
 from lxml.cssselect import CSSSelector
 from lxml.etree import HTML, XPath, tounicode
 
-from simplsale.commerce.mock import MockCommerce
+from simplsale.plugins.mock import MockCommerce
 from simplsale.tests import *
 
 
@@ -237,6 +237,7 @@ class TestSaleController(TestController):
         form.fields['billing_card_number'][0].value = '5105105105105100'
         form.fields['billing_expiration_month'][0].value = '06'
         form.fields['billing_expiration_year'][0].value = EXP_YEAR
+        form.fields['billing_cvv2'][0].value = '123'
         # Submit it and assume a redirection.
         response = form.submit()
         assert response.status == 302
