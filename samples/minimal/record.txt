@@ -1,9 +1,11 @@
-From: SimplSale-test@3purple.com
-To: ${billing_email}
+From: SimplSale-test@example.com
+To: SimplSale-test@example.com
 Subject: SimplSale minimal - ${transaction_number}
 
 Transaction number: ${transaction_number}
 Billing amount:     ${billing_amount}
+
+Billing email:      ${billing_email}
 Billing Street:     ${billing_street}
 Billing City:       ${billing_city}
 BIlling State:      ${billing_state}
@@ -12,4 +14,4 @@ Billing Card No.:   ${billing_card_number}
 
 CSV-formatted:
 
-${csv(transaction_number, billing_amount, billing_street, billing_city, billing_state, billing_zip, billing_card_number)}
+${csv(transaction_number, billing_email, billing_amount, billing_street, billing_city, billing_state, billing_zip, billing_card_number)}

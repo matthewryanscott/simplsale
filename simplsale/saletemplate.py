@@ -1,6 +1,8 @@
 from __future__ import with_statement
 
+import csv
 from os.path import abspath, join
+from StringIO import StringIO
 
 from lxml.etree import HTML
 
@@ -50,7 +52,24 @@ class SaleTemplate(object):
     def success_xml(self):
         return self._success_xml
 
+    def _text(self, template, **kw):
+        """Apply `kw` to the template and return the rendered text."""
+        kw['csv'] = _args_to_csv
+        return Template(template).render(**kw)
+
     def receipt_text(self, **kw):
         """Apply `kw` to the receipt template and return the rendered
         text."""
-        return Template(self._receipt_template).render(**kw)
+        return self._text(self._receipt_template, **kw)
+
+    def record_text(self, **kw):
+        """Apply `kw` to the record template and return the rendered
+        text."""
+        return self._text(self._record_template, **kw)
+
+
+def _args_to_csv(*args):
+    o = StringIO()
+    w = csv.writer(o)
+    w.writerow(args)
+    return o.getvalue().strip()

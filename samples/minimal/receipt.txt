@@ -1,4 +1,4 @@
-From: SimplSale-test@3purple.com
+From: SimplSale-test@example.com
 To: ${billing_email}
 Subject: SimplSale minimal - sale # ${transaction_number}
 
