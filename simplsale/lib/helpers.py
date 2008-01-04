@@ -74,26 +74,6 @@ def set_form_errors(form, error_text):
             e.text = error_text
 
 
-def field_names(form, required=False):
-    """Return the names of the fields in `form`.
-
-    Returns all names if `required` is `False`, or only the names of
-    required fields if `required` is `True`.
-    """
-    if required:
-        required = '.required'
-    else:
-        required = ''
-    elements = CSSSelector('input[type!="submit"]%s, select%s'
-                           % (required, required))(form)
-    names = []
-    for e in elements:
-        name = e.attrib.get('name', None)
-        if name is not None:
-            names.append(name)
-    return names
-
-
 def remove_field_errors(form, *names):
     """Remove field error elements for each named field in `form`."""
     for name in names:
@@ -125,3 +105,8 @@ def is_valid_zip(zipcode):
     """Return `True` if `zipcode` is a 5-digit number."""
     return ZIP_CODE_RE.match(zipcode) is not None
 
+
+def simplsale_form(doc):
+    """Return the XML element of the `simplsale-form` form in the
+    given document."""
+    return CSSSelector('form#simplsale-form')(doc)[0]

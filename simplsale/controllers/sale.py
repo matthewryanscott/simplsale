@@ -34,9 +34,9 @@ class SaleController(BaseController):
 
     def index_slash(self, sale_template):
         sale = SaleTemplate(sale_template)
-        doc = sale.index_xml()
-        self._apply_commerce_notice(doc)
-        form = sale.index_form()
+        index_xml = sale.index_xml()
+        self._apply_commerce_notice(index_xml)
+        form = h.simplsale_form(index_xml)
         # Fill in the expiration month and year fields if they use
         # select tags.
         month_selects = CSSSelector(
@@ -52,18 +52,19 @@ class SaleController(BaseController):
             # Empty form, so remove the form-errors element.
             h.set_form_errors(form, None)
             # Also remove any field errors.
-            h.remove_field_errors(form, *h.field_names(form))
+            field_names = sale.fields().keys()
+            h.remove_field_errors(form, *field_names)
             h.remove_field_errors(form, 'billing_expiration')
         # POST-specific stuff.
         elif request.method == 'POST':
             # Get the values for all of the fields.
             values = {}
-            for name in h.field_names(form):
+            for name in sale.fields().keys():
                 values[name] = request.params.get(name, '').strip()
             # Check to make sure all required fields are filled in.
             values_ok = True
             zip_is_valid = True
-            for name in h.field_names(form, required=True):
+            for name in sale.fields(required=True).keys():
                 if name.startswith('billing_expiration_'):
                     continue
                 value = values[name]
@@ -149,17 +150,17 @@ class SaleController(BaseController):
                 # index page again.
                 h.set_form_errors(
                     form, 'Some fields are not complete.  See below.')
-        return XHTML11_DTD + tounicode(doc, method='html')
+        return XHTML11_DTD + tounicode(index_xml, method='html')
 
     def success(self, sale_template, transaction_number):
         sale = SaleTemplate(sale_template)
-        doc = sale.success_xml()
-        self._apply_commerce_notice(doc)
+        success_xml = sale.success_xml()
+        self._apply_commerce_notice(success_xml)
         values = g.success_data[transaction_number]
         for key, value in values.items():
-            for e in CSSSelector('#' + key)(doc):
+            for e in CSSSelector('#' + key)(success_xml):
                 e.text = value
-        return XHTML11_DTD + tounicode(doc, method='html')
+        return XHTML11_DTD + tounicode(success_xml, method='html')
 
     def _apply_commerce_notice(self, doc):
         notice = config['simplsale.commerce.class'].notice

@@ -1,5 +1,6 @@
 from __future__ import with_statement
 
+from copy import deepcopy
 import csv
 from os.path import abspath, join
 from StringIO import StringIO
@@ -11,7 +12,7 @@ from mako.template import Template
 
 import pylons.config
 
-from simplsale.lib.helpers import field_names
+from simplsale.lib import helpers as h
 
 
 _cache = {
@@ -49,26 +50,40 @@ class SaleTemplate(object):
         except IOError:
             raise KeyError('Template %r not found.' % name)
 
-    def fields(self):
-        # XXX move field_names and form finding to this class.
-        form = CSSSelector('form#simplsale-form')(self._index_xml)[0]
-        f = dict((key, '') for key in field_names(form))
-        if 'billing_amount' in f:
-            f.setdefault('billing_amount_price', '')
-            f.setdefault('billing_amount_name', '')
-        return f
+    def fields(self, required=False):
+        """Returns a dictionary whose keys are the field names used in
+        the `simplsale-form` form in the index document, and whose
+        values are empty strings.
 
-    def index_form(self):
-        """Return the XML element of the SimplSale form in the index."""
-        return CSSSelector('form#simplsale-form')(self._index_xml)[0]
+        Uses all fields if `required` is `False`, or only the required
+        fields if `required` is `True`.
+        """
+        form = h.simplsale_form(self._index_xml)
+        if required:
+            required = '.required'
+        else:
+            required = ''
+        elements = CSSSelector('input[type!="submit"]%s, select%s'
+                               % (required, required))(form)
+        names = []
+        for e in elements:
+            name = e.attrib.get('name', None)
+            if name is not None:
+                names.append(name)
+        if 'billing_amount' in names and not required:
+            names.extend(['billing_amount_price', 'billing_amount_name'])
+        d = dict((key, '') for key in names)
+        return d
 
     def index_xml(self):
-        """Return the root XML element of the index document."""
-        return self._index_xml
+        """Return a copy of the root XML element of the index
+        document."""
+        return deepcopy(self._index_xml)
 
     def success_xml(self):
-        """Return the root XML element of the success document."""
-        return self._success_xml
+        """Return a copy of the root XML element of the success
+        document."""
+        return deepcopy(self._success_xml)
 
     def _text(self, template, **kw):
         """Apply `kw` to the template and return the rendered text."""
@@ -91,3 +106,5 @@ def _args_to_csv(*args):
     w = csv.writer(o)
     w.writerow(args)
     return o.getvalue().strip()
+
+
