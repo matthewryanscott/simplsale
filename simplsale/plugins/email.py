@@ -2,6 +2,8 @@ from __future__ import absolute_import
 
 import email
 
+from lxml.etree import Element
+
 
 __all__ = [
     'InlineEmail',
@@ -20,6 +22,9 @@ class BaseEmail(object):
     def apply_notice(self, element):
         element.text = 'We have emailed a receipt of this transaction to you.'
 
+    def deliver(self):
+        raise NotImplementedError()
+
     def _receipt_record(self):
         """Return a tuple of `(receipt_text, record_text)` based on
         values given during construction."""
@@ -30,7 +35,27 @@ class BaseEmail(object):
 
 
 class InlineEmail(BaseEmail):
-    pass
+
+    def deliver(self):
+        self._receipt_text, self._record_text = self._receipt_record()
+
+    def apply_notice(self, element):
+        receipt_header = Element('span')
+        receipt_header.text = 'Text of receipt:'
+        receipt_text = Element('pre')
+        receipt_text.text = self._receipt_text
+        record_header = Element('span')
+        record_header.text = 'Text of record:'
+        record_text = Element('pre')
+        record_text.text = self._record_text
+        element.extend([
+            Element('hr'),
+            receipt_header,
+            receipt_text,
+            Element('hr'),
+            record_header,
+            record_text,
+            ])
 
 
 class MockEmail(BaseEmail):
