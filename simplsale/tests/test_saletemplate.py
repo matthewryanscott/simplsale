@@ -39,24 +39,24 @@ class TestSaleTemplate(object):
             billing_card_number = '************5100',
             )
         expected = dedent("""\
-        From: SimplSale-test@example.com
-        To: abc@example.com
-        Subject: SimplSale minimal - sale # 123
+            From: SimplSale-test@example.com
+            To: abc@example.com
+            Subject: SimplSale minimal - sale # 123
 
-        The SimplTest minimal sale completed.
+            The SimplTest minimal sale completed.
 
-        The transaction number is 123.
+            The transaction number is 123.
 
-        Billing amount was 45.00.
+            Billing amount was 45.00.
 
-        Details:
+            Details:
 
-        Billing Street: 123 Fake St.
-        Billing City: Springfield
-        BIlling State: OR
-        Billing ZIP: 97477
-        Billing Card No.: ************5100
-        """)
+            Billing Street: 123 Fake St.
+            Billing City: Springfield
+            BIlling State: OR
+            Billing ZIP: 97477
+            Billing Card No.: ************5100
+            """)
         assert expected == self.minimal.receipt_text(**values)
 
     def test_record_text_all(self):
@@ -71,22 +71,22 @@ class TestSaleTemplate(object):
             billing_card_number = '************5100',
             )
         expected = dedent("""\
-        From: SimplSale-test@example.com
-        To: SimplSale-test@example.com
-        Subject: SimplSale minimal - 123
+            From: SimplSale-test@example.com
+            To: SimplSale-test@example.com
+            Subject: SimplSale minimal - 123
 
-        Transaction number: 123
-        Billing amount:     45.00
+            Transaction number: 123
+            Billing amount:     45.00
 
-        Billing email:      abc@example.com
-        Billing Street:     123 Fake St.
-        Billing City:       Springfield
-        BIlling State:      OR
-        Billing ZIP:        97477
-        Billing Card No.:   ************5100
+            Billing email:      abc@example.com
+            Billing Street:     123 Fake St.
+            Billing City:       Springfield
+            BIlling State:      OR
+            Billing ZIP:        97477
+            Billing Card No.:   ************5100
 
-        CSV-formatted:
+            CSV-formatted:
 
-        123,abc@example.com,45.00,123 Fake St.,Springfield,OR,97477,************5100
-        """)
+            123,abc@example.com,45.00,123 Fake St.,Springfield,OR,97477,************5100
+            """)
         assert expected == self.minimal.record_text(**values)

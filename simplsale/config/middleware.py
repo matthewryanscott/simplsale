@@ -36,11 +36,17 @@ def make_app(global_conf, full_stack=True, **app_conf):
     # Configure the Pylons environment
     load_environment(global_conf, app_conf)
 
-    # SimplSale: Find the commerce class.
+    # SimplSale: Find the commerce plugin.
     commerce_name = config['simplsale.commerce']
-    commerce_entrypoint = list(pkg_resources.iter_entry_points(
-        'simplsale.commerce', commerce_name))[0]
+    commerce_entrypoint = sorted(list(pkg_resources.iter_entry_points(
+        'simplsale.commerce', commerce_name)))[0]
     config['simplsale.commerce.class'] = commerce_entrypoint.load()
+
+    # SimplSale: Find the email plugin.
+    email_name = config['simplsale.email']
+    email_entrypoint = sorted(list(pkg_resources.iter_entry_points(
+        'simplsale.email', email_name)))[0]
+    config['simplsale.email.class'] = email_entrypoint.load()
 
     # The Pylons WSGI app
     app = PylonsApp()

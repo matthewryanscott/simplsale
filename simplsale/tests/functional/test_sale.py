@@ -1,9 +1,11 @@
 from datetime import date
+from textwrap import dedent
 
 from lxml.cssselect import CSSSelector
 from lxml.etree import HTML, XPath, tounicode
 
 from simplsale.plugins.commerce import MockCommerce
+from simplsale.plugins.email import MockEmail
 from simplsale.tests import *
 
 
@@ -243,10 +245,11 @@ class TestSaleController(TestController):
         assert response.status == 302
         response = response.follow()
         doc = HTML(response.body)
-        # Look for the signs of success.
+        # Look for the signs of success by examining the success page.
         def text(id):
             return CSSSelector('#' + id)(doc)[0].text
         assert text('transaction_number') != ''
+        assert text('simplsale-email-notice') != ''
         assert text('billing_amount_name') == 'option 1'
         assert text('billing_amount_price') == '40.00'
         assert text('billing_email') == 'foo@bar.com'
@@ -255,6 +258,55 @@ class TestSaleController(TestController):
         assert text('billing_state') == 'CA'
         assert text('billing_zip') == '90210'
         assert text('billing_card_number') == '************5100'
+        # Make sure that appropriate emails were "delivered".
+        expected = dedent("""\
+            From: SimplSale-test@example.com
+            To: foo@bar.com
+            Subject: SimplSale minimal - sale # %(transaction_number)s
+
+            The SimplTest minimal sale completed.
+
+            The transaction number is %(transaction_number)s.
+
+            Billing amount was 40.00 option 1.
+
+            Details:
+
+            Billing Street: 123 fake st
+            Billing City: Beverly Hills
+            BIlling State: CA
+            Billing ZIP: 90210
+            Billing Card No.: ************5100
+            """) % dict(transaction_number=text('transaction_number'))
+        assert expected == MockEmail.receipts[-1]
+        expected = 'SimplSale-test@example.com'
+        assert expected == MockEmail.receipt_senders[-1]
+        expected = set(['foo@bar.com'])
+        assert expected == MockEmail.receipt_recipient_sets[-1]
+        expected = dedent("""\
+            From: SimplSale-test@example.com
+            To: SimplSale-test@example.com
+            Subject: SimplSale minimal - %(transaction_number)s
+
+            Transaction number: %(transaction_number)s
+            Billing amount:     40.00 option 1
+
+            Billing email:      foo@bar.com
+            Billing Street:     123 fake st
+            Billing City:       Beverly Hills
+            BIlling State:      CA
+            Billing ZIP:        90210
+            Billing Card No.:   ************5100
+
+            CSV-formatted:
+
+            %(transaction_number)s,foo@bar.com,40.00 option 1,123 fake st,Beverly Hills,CA,90210,************5100
+            """) % dict(transaction_number=text('transaction_number'))
+        assert expected == MockEmail.records[-1]
+        expected = 'SimplSale-test@example.com'
+        assert expected == MockEmail.record_senders[-1]
+        expected = set(['SimplSale-test@example.com'])
+        assert expected == MockEmail.record_recipient_sets[-1]
 
     def test_post_commerce_failure(self):
         """When valid values are POST-ed, but the commercial

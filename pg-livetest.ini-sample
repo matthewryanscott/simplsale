@@ -28,8 +28,8 @@ use = egg:ZipLookup
 
 [app:simplsale]
 use = egg:SimplSale
-simplsale.sale_template_dir = %(here)s/samples
-simplsale.commerce = pyflowpro-pilot
+simplsale.sale_template_dir = %(here)s/playground
+simplsale.commerce = pyflowpro
 
 # Fill these out per your specific user information.
 

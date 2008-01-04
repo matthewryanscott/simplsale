@@ -126,16 +126,23 @@ class SaleController(BaseController):
                 values['billing_card_number'] = obscured_cn
                 # --- Sanitized values ---
                 if transaction.result is transaction.SUCCESS:
-                    # Successful transaction, proceed to redirect to
-                    # success page.
+                    # Store transaction number.
                     values['transaction_number'] = transaction.number
+                    # Successful transaction. First, deliver email.
+                    EmailClass = config['simplsale.email.class']
+                    mailer = EmailClass(sale_template, values)
+                    mailer.deliver()
+                    # Store the mailer itself so it can construct
+                    # notices directly onto success pages using etree
+                    # manipulation.
+                    values['mailer_instance'] = mailer
                     # Associate values with transaction number.
                     g.success_data[transaction.number] = values
                     # Perform the redirection.
                     h.redirect_to(h.url_for(
                         'sale_success',
-                        template_name=template_name,
-                        transaction_number=transaction.number,
+                        template_name = template_name,
+                        transaction_number = transaction.number,
                         ))
                 elif transaction.result is transaction.FAILURE:
                     # Failed transaction, continue with index page.
@@ -153,13 +160,22 @@ class SaleController(BaseController):
         return XHTML11_DTD + tounicode(index_xml, method='html')
 
     def success(self, template_name, transaction_number):
+        # Apply the generic commerce notice.
         sale_template = SaleTemplate(template_name)
         success_xml = sale_template.success_xml()
         self._apply_commerce_notice(success_xml)
+        # Retrieve from success cache.
         values = g.success_data[transaction_number]
+        # Grab the mailer, since it's an object and not a string.
+        mailer = values.pop('mailer_instance')
+        # Apply remaining text values to the template.
         for key, value in values.items():
             for e in CSSSelector('#' + key)(success_xml):
                 e.text = value
+        # Allow the mailer to manipulate the page.
+        for e in CSSSelector('#simplsale-email-notice')(success_xml):
+            mailer.apply_notice(e)
+        # Render.
         return XHTML11_DTD + tounicode(success_xml, method='html')
 
     def _apply_commerce_notice(self, doc):
