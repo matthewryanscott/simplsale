@@ -58,10 +58,16 @@ class SaleTemplate(object):
             f.setdefault('billing_amount_name', '')
         return f
 
+    def index_form(self):
+        """Return the XML element of the SimplSale form in the index."""
+        return CSSSelector('form#simplsale-form')(self._index_xml)[0]
+
     def index_xml(self):
+        """Return the root XML element of the index document."""
         return self._index_xml
 
     def success_xml(self):
+        """Return the root XML element of the success document."""
         return self._success_xml
 
     def _text(self, template, **kw):

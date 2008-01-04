@@ -36,7 +36,7 @@ class SaleController(BaseController):
         sale = SaleTemplate(sale_template)
         doc = sale.index_xml()
         self._apply_commerce_notice(doc)
-        form = CSSSelector('form#simplsale-form')(doc)[0]
+        form = sale.index_form()
         # Fill in the expiration month and year fields if they use
         # select tags.
         month_selects = CSSSelector(

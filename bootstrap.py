@@ -20,33 +20,34 @@ use the -c option to specify an alternate configuration file.
 $Id: bootstrap.py 72703 2007-02-20 11:49:26Z jim $
 """
 
-import os, shutil, sys, tempfile, urllib2
+if __name__ == '__main__':
+    import os, shutil, sys, tempfile, urllib2
 
-tmpeggs = tempfile.mkdtemp()
+    tmpeggs = tempfile.mkdtemp()
 
-ez = {}
-exec urllib2.urlopen('http://peak.telecommunity.com/dist/ez_setup.py'
-                     ).read() in ez
-ez['use_setuptools'](to_dir=tmpeggs, download_delay=0)
+    ez = {}
+    exec urllib2.urlopen('http://peak.telecommunity.com/dist/ez_setup.py'
+                         ).read() in ez
+    ez['use_setuptools'](to_dir=tmpeggs, download_delay=0)
 
-import pkg_resources
+    import pkg_resources
 
-cmd = 'from setuptools.command.easy_install import main; main()'
-if sys.platform == 'win32':
-    cmd = '"%s"' % cmd # work around spawn lamosity on windows
+    cmd = 'from setuptools.command.easy_install import main; main()'
+    if sys.platform == 'win32':
+        cmd = '"%s"' % cmd # work around spawn lamosity on windows
 
-ws = pkg_resources.working_set
-assert os.spawnle(
-    os.P_WAIT, sys.executable, sys.executable,
-    '-c', cmd, '-mqNxd', tmpeggs, 'zc.buildout',
-    dict(os.environ,
-         PYTHONPATH=
-         ws.find(pkg_resources.Requirement.parse('setuptools')).location
-         ),
-    ) == 0
+    ws = pkg_resources.working_set
+    assert os.spawnle(
+        os.P_WAIT, sys.executable, sys.executable,
+        '-c', cmd, '-mqNxd', tmpeggs, 'zc.buildout',
+        dict(os.environ,
+             PYTHONPATH=
+             ws.find(pkg_resources.Requirement.parse('setuptools')).location
+             ),
+        ) == 0
 
-ws.add_entry(tmpeggs)
-ws.require('zc.buildout')
-import zc.buildout.buildout
-zc.buildout.buildout.main(sys.argv[1:] + ['bootstrap'])
-shutil.rmtree(tmpeggs)
+    ws.add_entry(tmpeggs)
+    ws.require('zc.buildout')
+    import zc.buildout.buildout
+    zc.buildout.buildout.main(sys.argv[1:] + ['bootstrap'])
+    shutil.rmtree(tmpeggs)
