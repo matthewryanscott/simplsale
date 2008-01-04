@@ -80,7 +80,7 @@ class SaleController(BaseController):
                     # fields, and set their values to what the user
                     # gave.
                     h.remove_field_errors(form, name)
-                h.set_field_value(form, name, values[name])
+                h.set_field_value(form, name, value)
             # Handle billing_expiration_ differently.
             month = values['billing_expiration_month']
             year = values['billing_expiration_year']

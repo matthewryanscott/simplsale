@@ -74,7 +74,7 @@ def set_form_errors(form, error_text):
             e.text = error_text
 
 
-def field_names(form, required=''):
+def field_names(form, required=False):
     """Return the names of the fields in `form`.
 
     Returns all names if `required` is `False`, or only the names of
@@ -82,6 +82,8 @@ def field_names(form, required=''):
     """
     if required:
         required = '.required'
+    else:
+        required = ''
     elements = CSSSelector('input[type!="submit"]%s, select%s'
                            % (required, required))(form)
     names = []

@@ -4,11 +4,14 @@ import csv
 from os.path import abspath, join
 from StringIO import StringIO
 
+from lxml.cssselect import CSSSelector
 from lxml.etree import HTML
 
 from mako.template import Template
 
 import pylons.config
+
+from simplsale.lib.helpers import field_names
 
 
 _cache = {
@@ -45,6 +48,15 @@ class SaleTemplate(object):
                 self._record_template = f.read()
         except IOError:
             raise KeyError('Template %r not found.' % name)
+
+    def fields(self):
+        # XXX move field_names and form finding to this class.
+        form = CSSSelector('form#simplsale-form')(self._index_xml)[0]
+        f = dict((key, '') for key in field_names(form))
+        if 'billing_amount' in f:
+            f.setdefault('billing_amount_price', '')
+            f.setdefault('billing_amount_name', '')
+        return f
 
     def index_xml(self):
         return self._index_xml

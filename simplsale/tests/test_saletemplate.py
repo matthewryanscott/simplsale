@@ -8,6 +8,25 @@ class TestSaleTemplate(object):
     def setUp(self):
         self.minimal = SaleTemplate('minimal')
 
+    def test_fields(self):
+        expected = {
+            'billing_amount': '',
+            'billing_amount_price': '',
+            'billing_amount_name': '',
+            'billing_email': '',
+            'billing_name': '',
+            'billing_street': '',
+            'billing_zip': '',
+            'billing_city': '',
+            'billing_state': '',
+            'billing_card_number': '',
+            'billing_expiration_month': '',
+            'billing_expiration_year': '',
+            'billing_cvv2': '',
+            }
+        print self.minimal.fields()
+        assert expected == self.minimal.fields()
+
     def test_receipt_text_all(self):
         values = dict(
             billing_email = 'abc@example.com',
