@@ -18,7 +18,7 @@ def SalestaticController(environ, start_response):
     # Find the path for web resources.
     routes_dict = environ['pylons.routes_dict']
     path = routes_dict['path']
-    sale_template = SaleTemplate(routes_dict['sale_template'])
+    sale_template = SaleTemplate(routes_dict['template_name'])
     html_path = os.path.join(sale_template.path, 'html')
     # Find or create a static file serving app for this path.
     if html_path in _apps:

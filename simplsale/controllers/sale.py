@@ -22,7 +22,7 @@ XHTML11_DTD = ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" '
 
 class SaleController(BaseController):
 
-    def index(self, sale_template):
+    def index(self, template_name):
         if request.method == 'GET' and not request.path_info.endswith('/'):
             # Require trailing slash to make relative paths work
             # right.
@@ -30,11 +30,11 @@ class SaleController(BaseController):
             # XXX: More elegant way to do this with Pylons?
             h.redirect_to(request.path_info + '/')
         else:
-            return self.index_slash(sale_template)
+            return self.index_slash(template_name)
 
-    def index_slash(self, sale_template):
-        sale = SaleTemplate(sale_template)
-        index_xml = sale.index_xml()
+    def index_slash(self, template_name):
+        sale_template = SaleTemplate(template_name)
+        index_xml = sale_template.index_xml()
         self._apply_commerce_notice(index_xml)
         form = h.simplsale_form(index_xml)
         # Fill in the expiration month and year fields if they use
@@ -52,19 +52,19 @@ class SaleController(BaseController):
             # Empty form, so remove the form-errors element.
             h.set_form_errors(form, None)
             # Also remove any field errors.
-            field_names = sale.fields().keys()
+            field_names = sale_template.fields().keys()
             h.remove_field_errors(form, *field_names)
             h.remove_field_errors(form, 'billing_expiration')
         # POST-specific stuff.
         elif request.method == 'POST':
             # Get the values for all of the fields.
             values = {}
-            for name in sale.fields().keys():
+            for name in sale_template.fields().keys():
                 values[name] = request.params.get(name, '').strip()
             # Check to make sure all required fields are filled in.
             values_ok = True
             zip_is_valid = True
-            for name in sale.fields(required=True).keys():
+            for name in sale_template.fields(required=True).keys():
                 if name.startswith('billing_expiration_'):
                     continue
                 value = values[name]
@@ -134,7 +134,7 @@ class SaleController(BaseController):
                     # Perform the redirection.
                     h.redirect_to(h.url_for(
                         'sale_success',
-                        sale_template=sale_template,
+                        template_name=template_name,
                         transaction_number=transaction.number,
                         ))
                 elif transaction.result is transaction.FAILURE:
@@ -152,9 +152,9 @@ class SaleController(BaseController):
                     form, 'Some fields are not complete.  See below.')
         return XHTML11_DTD + tounicode(index_xml, method='html')
 
-    def success(self, sale_template, transaction_number):
-        sale = SaleTemplate(sale_template)
-        success_xml = sale.success_xml()
+    def success(self, template_name, transaction_number):
+        sale_template = SaleTemplate(template_name)
+        success_xml = sale_template.success_xml()
         self._apply_commerce_notice(success_xml)
         values = g.success_data[transaction_number]
         for key, value in values.items():

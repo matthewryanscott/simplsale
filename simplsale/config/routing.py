@@ -18,14 +18,14 @@ def make_map():
 
     # CUSTOM ROUTES HERE
     map.connect('sale_index',
-                'sale/:sale_template/',
+                'sale/:template_name/',
                 controller='sale', action='index')
     map.connect('sale_success',
-                'sale/:sale_template/success-:transaction_number',
+                'sale/:template_name/success-:transaction_number',
                 controller='sale', action='success')
 
     map.connect('salestatic',
-                'sale/:sale_template/*path',
+                'sale/:template_name/*path',
                 controller='salestatic')
 
     map.connect('ziplookup', 'zip/*zipcode', controller='')

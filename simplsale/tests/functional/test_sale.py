@@ -14,8 +14,8 @@ class TestSaleController(TestController):
 
     def _index(self):
         response = self.app.get(url_for(
-            controller='sale',
-            sale_template='minimal',
+            controller = 'sale',
+            template_name = 'minimal',
             ))
         # We get a 302 since url_for doesn't add the '/' to the end,
         # so follow it and get the actual index page.

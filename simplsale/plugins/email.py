@@ -3,7 +3,9 @@ class InlineEmail(object):
 
 
 class MockEmail(object):
-    pass
+
+    def __init__(self, sale_template):
+        pass
 
 
 class SendmailEmail(object):
