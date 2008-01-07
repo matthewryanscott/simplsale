@@ -6,5 +6,5 @@ syntax:glob
 parts/*
 eggs/*
 develop-eggs/*
-bin/buildout
+bin/*
 playground/*
