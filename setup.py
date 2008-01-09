@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='SimplSale',
-    version="0.0.0",
+    version="0.1",
     #description='',
     #author='',
     #author_email='',
