@@ -17,6 +17,8 @@ if __name__ == '__main__':
 
         def after_install(options, home_dir):
             home_dir = os.path.abspath(home_dir)
+            bin = join(home_dir, 'bin')
+            os.environ['PATH'] = '%s:%s' % (bin, os.environ['PATH'])
             lib = join(home_dir, 'lib')
             # Install libxml2
             cmmi(
