@@ -16,6 +16,7 @@ if __name__ == '__main__':
                 )
 
         def after_install(options, home_dir):
+            home_dir = os.path.abspath(home_dir)
             lib = join(home_dir, 'lib')
             # Install libxml2
             cmmi(
@@ -61,8 +62,13 @@ if __name__ == '__main__':
                 os.makedirs(workspace)
                 # Extract the package to the workspace.
                 print 'Extracting', url, 'to', workspace
+                basename = os.path.basename(url)
                 tar_gz = urllib2.urlopen(url)
-                tar = tarfile.TarFile.open(fileobj=tar_gz, mode='r|*')
+                tar = tarfile.TarFile.open(
+                    name = basename,
+                    fileobj = tar_gz, 
+                    mode = 'r|*',
+                    )
                 tar.extractall(workspace)
                 tar.close()
                 tar_gz.close()
@@ -104,7 +110,7 @@ if __name__ == '__main__':
                 # and that it is the directory that we want to build within.
                 src = join(workspace, os.listdir(workspace)[0])
                 os.chdir(src)
-                python25 = join(home_dir, 'bin', 'python2.5')
+                python= join(home_dir, 'bin', py_version)
                 args = [python25, 'setup.py', 'build_ext'] + build_ext_options
                 args.extend(['develop'])
                 print 'Building with', ' '.join(args)
