@@ -3,6 +3,7 @@
 import virtualenv, textwrap
 
 if __name__ == '__main__':
+    import virtualenv, textwrap
     output = virtualenv.create_bootstrap_script(textwrap.dedent("""
         import os, subprocess
 
@@ -19,19 +20,29 @@ if __name__ == '__main__':
             lib = join(home_dir, 'lib')
             # Install libxml2
             cmmi(
+                home_dir = home_dir,
                 name = 'libxml2',
-                prefix = home_dir,
                 url = 'ftp://xmlsoft.org/libxml2/libxml2-2.6.30.tar.gz',
                 extra_options = ['--without-python'],
                 )
             # Install libxslt
             cmmi(
+                home_dir = home_dir,
                 name = 'libxslt',
-                prefix = home_dir,
                 url = 'ftp://xmlsoft.org/libxml2/libxslt-1.1.22.tar.gz',
                 extra_options = [
                     '--with-libxml-prefix=%s' % home_dir,
                     '--without-python',
+                    ],
+                )
+            # Install lxml
+            easy_install_custom(
+                home_dir = home_dir,
+                name = 'lxml',
+                package = 'lxml==2.0alpha6',
+                build_ext_options = [
+                    '--include-dirs=%s/include' % home_dir,
+                    '--rpath=%s/lib' % home_dir,
                     ],
                 )
             # Install SimplSale
@@ -43,10 +54,10 @@ if __name__ == '__main__':
             else:
                 easy_install(home_dir, 'SimplSale==%s' % simplsale_version)
 
-        def cmmi(name, prefix, url, extra_options):
+        def cmmi(home_dir, name, url, extra_options):
             import urllib2, tarfile
             # Create workspace to compile in.
-            workspace = join(prefix, 'src', name)
+            workspace = join(home_dir, 'src', name)
             if not os.path.exists(workspace):
                 os.makedirs(workspace)
                 # Extract the package to the workspace.
@@ -56,13 +67,13 @@ if __name__ == '__main__':
                 tar.extractall(workspace)
                 tar.close()
                 tar_gz.close()
-                # Assume that the only file in the workspace is a directory, and that
-                # it is the directory that we want to build within.
+                # Assume that the only file in the workspace is a directory,
+                # and that it is the directory that we want to build within.
                 src = join(workspace, os.listdir(workspace)[0])
                 os.chdir(src)
                 args = [
                     join(src, 'configure'),
-                    '--prefix=%s' % prefix,
+                    '--prefix=%s' % home_dir,
                     ]
                 args.extend(extra_options)
                 print ' '.join(args)
@@ -74,10 +85,32 @@ if __name__ == '__main__':
             else:
                 print 'Already extracted', name
 
-        def easy_install(home_dir, package, extra_options):
-            options = [join(home_dir, 'bin', 'easy_install')]
-            options.extend(extra_options)
-            options.append(package)
-            subprocess.call(options)
+        def easy_install(home_dir, package):
+            subprocess.call([join(home_dir, 'bin', 'easy_install'), package])
+
+        def easy_install_custom(home_dir, name, package, build_ext_options):
+            # Create workspace to build in.
+            workspace = join(home_dir, 'src', name)
+            if not os.path.exists(workspace):
+                os.makedirs(workspace)
+                # Extract the package to the workspace.
+                print 'Extracting', package, 'to', workspace
+                os.chdir(workspace)
+                subprocess.call([
+                    join(home_dir, 'bin', 'easy_install'),
+                    '-eb.',
+                    package,
+                    ])
+                # Assume that the only file in the workspace is a directory,
+                # and that it is the directory that we want to build within.
+                src = join(workspace, os.listdir(workspace)[0])
+                os.chdir(src)
+                python = join(home_dir, 'bin', 'python')
+                args = [python, 'setup.py', 'build_ext'] + build_ext_options
+                args.extend(['develop'])
+                print 'Building with', ' '.join(args)
+                subprocess.call(args)
+            else:
+                print 'Already extracted', name
         """))
     f = open('simplsale-bootstrap.py', 'w').write(output)
