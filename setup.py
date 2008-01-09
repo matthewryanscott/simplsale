@@ -15,8 +15,8 @@ setup(
     install_requires=[
     "Pylons >= 0.9.6.1",
     'lxml >= 2.0alpha5',
-    'PyFlowPro >= 0.0.0dev',
-    'ZipLookup >= 0.0.0dev',
+    'PyFlowPro >= 0.1dev',
+    'ZipLookup >= 0.1dev',
     ],
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,

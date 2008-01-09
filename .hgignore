@@ -8,3 +8,4 @@ eggs/*
 develop-eggs/*
 bin/*
 playground/*
+simplsale-bootstrap.py
