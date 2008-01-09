@@ -104,8 +104,8 @@ if __name__ == '__main__':
                 # and that it is the directory that we want to build within.
                 src = join(workspace, os.listdir(workspace)[0])
                 os.chdir(src)
-                python = join(home_dir, 'bin', 'python')
-                args = [python, 'setup.py', 'build_ext'] + build_ext_options
+                python25 = join(home_dir, 'bin', 'python2.5')
+                args = [python25, 'setup.py', 'build_ext'] + build_ext_options
                 args.extend(['develop'])
                 print 'Building with', ' '.join(args)
                 subprocess.call(args)
