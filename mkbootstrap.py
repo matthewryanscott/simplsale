@@ -21,14 +21,14 @@ if __name__ == '__main__':
             cmmi(
                 home_dir = home_dir,
                 name = 'libxml2',
-                url = 'ftp://xmlsoft.org/libxml2/libxml2-2.6.30.tar.gz',
+                url = 'http://code.3purple.com/3rdparty/libxml2-2.6.30.tar.gz',
                 extra_options = ['--without-python'],
                 )
             # Install libxslt
             cmmi(
                 home_dir = home_dir,
                 name = 'libxslt',
-                url = 'ftp://xmlsoft.org/libxml2/libxslt-1.1.22.tar.gz',
+                url = 'http://code.3purple.com/3rdparty/libxslt-1.1.22.tar.gz',
                 extra_options = [
                     '--with-libxml-prefix=%s' % home_dir,
                     '--without-python',
