@@ -1,7 +1,5 @@
 #!/usr/bin/env python2.5
 
-import virtualenv, textwrap
-
 if __name__ == '__main__':
     import virtualenv, textwrap
     output = virtualenv.create_bootstrap_script(textwrap.dedent("""
@@ -13,7 +11,8 @@ if __name__ == '__main__':
                 metavar = 'VERSION',
                 dest = 'simplsale_version',
                 default = 'latest',
-                help = '"latest", "manual", or a specific version of SimplSale to install.',
+                help = '"latest", "manual", or a specific version '
+                       'of SimplSale to install.',
                 )
 
         def after_install(options, home_dir):
