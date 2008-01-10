@@ -9,10 +9,20 @@ import re
 from lxml.cssselect import CSSSelector
 from lxml.etree import Element
 
+import pylons.config
+
 from webhelpers import *
 
 
 ZIP_CODE_RE = re.compile(r'^\d{5}$')
+
+
+old_url_for = url_for
+
+def url_for(*args, **kw):
+    relative_url = old_url_for(*args, **kw)
+    mountpoint = pylons.config.get('simplsale.mountpoint', '')
+    return mountpoint + relative_url
 
 
 def fill_in_expiration_months(select):
