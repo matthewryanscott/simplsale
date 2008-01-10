@@ -336,10 +336,46 @@ class TestSaleController(TestController):
         assert len(form_errors) == 1
         assert form_errors[0].text != ''
 
-#     def test_post_success_persists(self):
-#         """When a transaction succeeds, the success page is shown at a
-#         unique URL that may be retrieved by GET-ing the same URL
-#         again."""
+    def test_post_success_persists(self):
+        """When a transaction succeeds, the success page is shown at a
+        unique URL that may be retrieved by GET-ing the same URL
+        again."""
+        response = self._index()
+        form = response.forms[0]
+        # Fill in all required fields.
+        form.fields['billing_amount'][0].value = '40.00 option 1'
+        form.fields['billing_email'][0].value = 'foo@bar.com'
+        form.fields['billing_name'][0].value = 'name o. card'
+        form.fields['billing_street'][0].value = '123 fake st'
+        form.fields['billing_zip'][0].value = '90210'
+        form.fields['billing_card_number'][0].value = '5105105105105100'
+        form.fields['billing_expiration_month'][0].value = '06'
+        form.fields['billing_expiration_year'][0].value = EXP_YEAR
+        form.fields['billing_cvv2'][0].value = '123'
+        # Submit it and assume a redirection.
+        response = form.submit()
+        assert response.status == 302
+        response1 = response.follow()
+        doc1 = HTML(response1.body)
+        # Look for the signs of success by examining the success page.
+        def examine_for_success(doc):
+            def text(id):
+                return CSSSelector('#' + id)(doc)[0].text
+            assert text('transaction_number') != ''
+            assert text('simplsale-email-notice') != ''
+            assert text('billing_amount_name') == 'option 1'
+            assert text('billing_amount_price') == '40.00'
+            assert text('billing_email') == 'foo@bar.com'
+            assert text('billing_street') == '123 fake st'
+            assert text('billing_city') == 'Beverly Hills'
+            assert text('billing_state') == 'CA'
+            assert text('billing_zip') == '90210'
+            assert text('billing_card_number') == '************5100'
+        examine_for_success(doc1)
+        # Visit the page again, and look for the same signs of success.
+        response2 = response.follow()
+        doc2 = HTML(response2.body)
+        examine_for_success(doc2)
 
 #     def test_post_success_expires(self):
 #         """Success pages eventually expire after a number of seconds."""

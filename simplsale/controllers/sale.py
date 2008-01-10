@@ -164,8 +164,8 @@ class SaleController(BaseController):
         sale_template = SaleTemplate(template_name)
         success_xml = sale_template.success_xml()
         self._apply_commerce_notice(success_xml)
-        # Retrieve from success cache.
-        values = g.success_data[transaction_number]
+        # Retrieve from success cache. Copy it since we will mutate it.
+        values = g.success_data[transaction_number].copy()
         # Grab the mailer, since it's an object and not a string.
         mailer = values.pop('mailer_instance')
         # Apply remaining text values to the template.
