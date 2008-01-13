@@ -278,11 +278,11 @@ class TestSaleController(TestController):
             Billing ZIP: 90210
             Billing Card No.: ************5100
             """) % dict(transaction_number=text('transaction_number'))
-        assert expected == MockEmail.receipts[-1]
+        assert expected == MockEmail.last_receipt_text
         expected = 'SimplSale-test@example.com'
-        assert expected == MockEmail.receipt_senders[-1]
+        assert expected == MockEmail.last_receipt_sender
         expected = set(['foo@bar.com'])
-        assert expected == MockEmail.receipt_recipient_sets[-1]
+        assert expected == MockEmail.last_receipt_recipients
         expected = dedent("""\
             From: SimplSale-test@example.com
             To: SimplSale-test@example.com
@@ -302,11 +302,11 @@ class TestSaleController(TestController):
 
             %(transaction_number)s,foo@bar.com,40.00 option 1,123 fake st,Beverly Hills,CA,90210,************5100
             """) % dict(transaction_number=text('transaction_number'))
-        assert expected == MockEmail.records[-1]
+        assert expected == MockEmail.last_record_text
         expected = 'SimplSale-test@example.com'
-        assert expected == MockEmail.record_senders[-1]
+        assert expected == MockEmail.last_record_sender
         expected = set(['SimplSale-test@example.com'])
-        assert expected == MockEmail.record_recipient_sets[-1]
+        assert expected == MockEmail.last_record_recipients
 
     def test_post_commerce_failure(self):
         """When valid values are POST-ed, but the commercial

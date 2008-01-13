@@ -39,6 +39,6 @@ setup(
     [simplsale.email]
     inline = simplsale.plugins.email:InlineEmail
     mock = simplsale.plugins.email:MockEmail
-    sendmail = simplsale.plugins.email:SendmailEmail
+    smtp = simplsale.plugins.email:SmtpEmail
     """,
 )
