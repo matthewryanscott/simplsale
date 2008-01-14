@@ -1,17 +1,17 @@
 From: SimplSale-test@example.com
-To: ${billing_email}
-Subject: SimplSale minimal - sale # ${transaction_number}
+To: ${f.billing_email}
+Subject: SimplSale minimal - sale # ${f.transaction_number}
 
 The SimplTest minimal sale completed.
 
-The transaction number is ${transaction_number}.
+The transaction number is ${f.transaction_number}.
 
-Billing amount was ${billing_amount}.
+Billing amount was ${f.billing_amount}.
 
 Details:
 
-Billing Street: ${billing_street}
-Billing City: ${billing_city}
-BIlling State: ${billing_state}
-Billing ZIP: ${billing_zip}
-Billing Card No.: ${billing_card_number}
+Billing Street: ${f.billing_street}
+Billing City: ${f.billing_city}
+BIlling State: ${f.billing_state}
+Billing ZIP: ${f.billing_zip}
+Billing Card No.: ${f.billing_card_number}

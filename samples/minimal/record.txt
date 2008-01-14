@@ -1,17 +1,17 @@
 From: SimplSale-test@example.com
 To: SimplSale-test@example.com
-Subject: SimplSale minimal - ${transaction_number}
+Subject: SimplSale minimal - ${f.transaction_number}
 
-Transaction number: ${transaction_number}
-Billing amount:     ${billing_amount}
+Transaction number: ${f.transaction_number}
+Billing amount:     ${f.billing_amount}
 
-Billing email:      ${billing_email}
-Billing Street:     ${billing_street}
-Billing City:       ${billing_city}
-BIlling State:      ${billing_state}
-Billing ZIP:        ${billing_zip}
-Billing Card No.:   ${billing_card_number}
+Billing email:      ${f.billing_email}
+Billing Street:     ${f.billing_street}
+Billing City:       ${f.billing_city}
+BIlling State:      ${f.billing_state}
+Billing ZIP:        ${f.billing_zip}
+Billing Card No.:   ${f.billing_card_number}
 
 CSV-formatted:
 
-${csv(transaction_number, billing_email, billing_amount, billing_street, billing_city, billing_state, billing_zip, billing_card_number)}
+${csv(f.transaction_number, f.billing_email, f.billing_amount, f.billing_street, f.billing_city, f.billing_state, f.billing_zip, f.billing_card_number)}

@@ -87,8 +87,10 @@ class SaleTemplate(object):
 
     def _text(self, template, **kw):
         """Apply `kw` to the template and return the rendered text."""
-        kw['csv'] = _args_to_csv
-        return Template(template).render(**kw)
+        ns = dict()
+        ns['csv'] = _args_to_csv
+        ns['f'] = _Namespace(kw)
+        return Template(template).render(**ns)
 
     def receipt_text(self, **kw):
         """Apply `kw` to the receipt template and return the rendered
@@ -99,6 +101,12 @@ class SaleTemplate(object):
         """Apply `kw` to the record template and return the rendered
         text."""
         return self._text(self._record_template, **kw)
+
+
+class _Namespace(object):
+
+    def __init__(self, kw):
+        self.__dict__.update(kw)
 
 
 def _args_to_csv(*args):
