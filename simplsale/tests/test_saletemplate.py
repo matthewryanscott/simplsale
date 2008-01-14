@@ -31,7 +31,9 @@ class TestSaleTemplate(object):
         values = dict(
             billing_email = 'abc@example.com',
             transaction_number = '123',
-            billing_amount = '45.00',
+            billing_amount = '45.00 some option',
+            billing_amount_description = 'some option',
+            billing_amount_price = '45.00',
             billing_street = '123 Fake St.',
             billing_city = 'Springfield',
             billing_state = 'OR',
@@ -51,6 +53,7 @@ class TestSaleTemplate(object):
 
             The transaction number is 123.
 
+            You purchased "some option".
             Billing amount was 45.00.
 
             Details:
@@ -67,7 +70,9 @@ class TestSaleTemplate(object):
         values = dict(
             billing_email = 'abc@example.com',
             transaction_number = '123',
-            billing_amount = '45.00',
+            billing_amount = '45.00 some option',
+            billing_amount_description = 'some option',
+            billing_amount_price = '45.00',
             billing_street = '123 Fake St.',
             billing_city = 'Springfield',
             billing_state = 'OR',
@@ -82,7 +87,7 @@ class TestSaleTemplate(object):
             Subject: SimplSale minimal [dummy] - 123
 
             Transaction number: 123
-            Billing amount:     45.00
+            Billing amount:     45.00 some option
 
             Billing email:      abc@example.com
             Billing Street:     123 Fake St.
@@ -93,6 +98,6 @@ class TestSaleTemplate(object):
 
             CSV-formatted:
 
-            123,abc@example.com,45.00,123 Fake St.,Springfield,OR,97477,************5100
+            123,abc@example.com,45.00 some option,123 Fake St.,Springfield,OR,97477,************5100
             """)
         assert expected == self.minimal.record_text(**values)

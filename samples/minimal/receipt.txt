@@ -8,7 +8,8 @@ The SimplTest minimal sale completed.
 
 The transaction number is ${f.transaction_number}.
 
-Billing amount was ${f.billing_amount}.
+You purchased "${f.billing_amount_description}".
+Billing amount was ${f.billing_amount_price}.
 
 Details:
 

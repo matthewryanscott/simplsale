@@ -250,7 +250,7 @@ class TestSaleController(TestController):
             return CSSSelector('#' + id)(doc)[0].text
         assert text('transaction_number') != ''
         assert text('simplsale-email-notice') != ''
-        assert text('billing_amount_name') == 'option 1'
+        assert text('billing_amount_description') == 'option 1'
         assert text('billing_amount_price') == '40.00'
         assert text('billing_email') == 'foo@bar.com'
         assert text('billing_street') == '123 fake st'
@@ -270,7 +270,8 @@ class TestSaleController(TestController):
 
             The transaction number is %(transaction_number)s.
 
-            Billing amount was 40.00 option 1.
+            You purchased "option 1".
+            Billing amount was 40.00.
 
             Details:
 
@@ -365,7 +366,7 @@ class TestSaleController(TestController):
                 return CSSSelector('#' + id)(doc)[0].text
             assert text('transaction_number') != ''
             assert text('simplsale-email-notice') != ''
-            assert text('billing_amount_name') == 'option 1'
+            assert text('billing_amount_description') == 'option 1'
             assert text('billing_amount_price') == '40.00'
             assert text('billing_email') == 'foo@bar.com'
             assert text('billing_street') == '123 fake st'

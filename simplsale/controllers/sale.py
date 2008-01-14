@@ -110,14 +110,16 @@ class SaleController(BaseController):
             if values_ok:
                 # Redirect to success page when everything is OK.
                 # --- Unsanitized values ---
-                ba_price, ba_name = values['billing_amount'].split(' ', 1)
+                # Split billing_amount between price and description.
+                ba_items = values['billing_amount'].split(' ', 1)
+                ba_price, ba_description = ba_items
                 values['billing_amount_price'] = ba_price
                 # Create and submit the commerce transaction.
                 CommerceClass = config['simplsale.commerce.class']
                 transaction = CommerceClass(config, values)
                 transaction.submit()    # Blocking.
                 # --- Sanitize ---
-                values['billing_amount_name'] = ba_name
+                values['billing_amount_description'] = ba_description
                 values['billing_amount_price'] = ba_price
                 # Obscure the card number.
                 cn = values['billing_card_number']
