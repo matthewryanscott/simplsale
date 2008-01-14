@@ -37,11 +37,15 @@ class TestSaleTemplate(object):
             billing_state = 'OR',
             billing_zip = '97477',
             billing_card_number = '************5100',
+            commerce_name = 'dummy',
+            commerce_notice = '(No actual commerce plugin was used)',
             )
         expected = dedent("""\
             From: SimplSale-test@example.com
             To: abc@example.com
             Subject: SimplSale minimal - sale # 123
+
+            (No actual commerce plugin was used)
 
             The SimplTest minimal sale completed.
 
@@ -69,11 +73,13 @@ class TestSaleTemplate(object):
             billing_state = 'OR',
             billing_zip = '97477',
             billing_card_number = '************5100',
+            commerce_name = 'dummy',
+            commerce_notice = '(No actual commerce plugin was used)',
             )
         expected = dedent("""\
             From: SimplSale-test@example.com
             To: SimplSale-test@example.com
-            Subject: SimplSale minimal - 123
+            Subject: SimplSale minimal [dummy] - 123
 
             Transaction number: 123
             Billing amount:     45.00

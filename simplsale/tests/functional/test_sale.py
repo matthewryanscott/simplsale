@@ -264,6 +264,8 @@ class TestSaleController(TestController):
             To: foo@bar.com
             Subject: SimplSale minimal - sale # %(transaction_number)s
 
+            You are using the SimplSale "mock" commerce plugin.
+
             The SimplTest minimal sale completed.
 
             The transaction number is %(transaction_number)s.
@@ -286,7 +288,7 @@ class TestSaleController(TestController):
         expected = dedent("""\
             From: SimplSale-test@example.com
             To: SimplSale-test@example.com
-            Subject: SimplSale minimal - %(transaction_number)s
+            Subject: SimplSale minimal [mock] - %(transaction_number)s
 
             Transaction number: %(transaction_number)s
             Billing amount:     40.00 option 1

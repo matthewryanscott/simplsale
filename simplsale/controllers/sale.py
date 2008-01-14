@@ -126,8 +126,13 @@ class SaleController(BaseController):
                 values['billing_card_number'] = obscured_cn
                 # --- Sanitized values ---
                 if transaction.result is transaction.SUCCESS:
-                    # Store transaction number.
-                    values['transaction_number'] = transaction.number
+                    # Store transaction number and other information.
+                    values.update(dict(
+                        commerce_name = config['simplsale.commerce'],
+                        commerce_notice = 
+                            config['simplsale.commerce.class'].notice,
+                        transaction_number = transaction.number,
+                        ))
                     # Successful transaction. First, deliver email.
                     EmailClass = config['simplsale.email.class']
                     mailer = EmailClass(sale_template, values)

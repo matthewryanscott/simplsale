@@ -2,6 +2,8 @@ From: SimplSale-test@example.com
 To: ${f.billing_email}
 Subject: SimplSale minimal - sale # ${f.transaction_number}
 
+${f.commerce_notice}
+
 The SimplTest minimal sale completed.
 
 The transaction number is ${f.transaction_number}.

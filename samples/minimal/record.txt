@@ -1,6 +1,6 @@
 From: SimplSale-test@example.com
 To: SimplSale-test@example.com
-Subject: SimplSale minimal - ${f.transaction_number}
+Subject: SimplSale minimal [${f.commerce_name}] - ${f.transaction_number}
 
 Transaction number: ${f.transaction_number}
 Billing amount:     ${f.billing_amount}
