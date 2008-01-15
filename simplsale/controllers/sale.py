@@ -167,12 +167,19 @@ class SaleController(BaseController):
         return XHTML11_DTD + tounicode(index_xml, method='html')
 
     def success(self, template_name, transaction_number):
+        # First, divert to the 404 page if the
+        # transaction_number is not found.
+        if transaction_number not in g.success_data:
+            return abort(
+                status_code = 404, 
+                comment = 'Transaction number expired or invalid.',
+                )
+        # Retrieve from success cache. Copy it since we will mutate it.
+        values = g.success_data[transaction_number].copy()
         # Apply the generic commerce notice.
         sale_template = SaleTemplate(template_name)
         success_xml = sale_template.success_xml()
         self._apply_commerce_notice(success_xml)
-        # Retrieve from success cache. Copy it since we will mutate it.
-        values = g.success_data[transaction_number].copy()
         # Grab the mailer, since it's an object and not a string.
         mailer = values.pop('mailer_instance')
         # Apply remaining text values to the template.

@@ -15,10 +15,7 @@ EXP_YEAR = str(date.today().year + 1)[-2:]
 class TestSaleController(TestController):
 
     def _index(self):
-        response = self.app.get(url_for(
-            controller = 'sale',
-            template_name = 'minimal',
-            ))
+        response = self.app.get(url_for('sale_index', template_name='minimal'))
         # We get a 302 since url_for doesn't add the '/' to the end,
         # so follow it and get the actual index page.
         assert response.status == 302
@@ -380,5 +377,19 @@ class TestSaleController(TestController):
         doc2 = HTML(response2.body)
         examine_for_success(doc2)
 
-#     def test_post_success_expires(self):
-#         """Success pages eventually expire after a number of seconds."""
+    def test_friendly_404_on_invalid_session(self):
+        """We display a friendly 404 page if an invalid session is 
+        requested."""
+        url = url_for(
+            'sale_success',
+            template_name = 'minimal',
+            transaction_number = '123XYZ',
+            )
+        response = self.app.get(url, status=404)
+        expected = 'NOT FOUND'
+        assert expected in response.body
+
+    def test_post_success_expires(self):
+        """Success pages eventually expire after a number of seconds."""
+        pass
+
