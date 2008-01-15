@@ -277,7 +277,7 @@ class TestSaleController(TestController):
 
             Billing Street: 123 fake st
             Billing City: Beverly Hills
-            BIlling State: CA
+            Billing State: CA
             Billing ZIP: 90210
             Billing Card No.: ************5100
             """) % dict(transaction_number=text('transaction_number'))
@@ -297,7 +297,7 @@ class TestSaleController(TestController):
             Billing email:      foo@bar.com
             Billing Street:     123 fake st
             Billing City:       Beverly Hills
-            BIlling State:      CA
+            Billing State:      CA
             Billing ZIP:        90210
             Billing Card No.:   ************5100
 

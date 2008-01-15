@@ -60,7 +60,7 @@ class TestSaleTemplate(object):
 
             Billing Street: 123 Fake St.
             Billing City: Springfield
-            BIlling State: OR
+            Billing State: OR
             Billing ZIP: 97477
             Billing Card No.: ************5100
             """)
@@ -92,7 +92,7 @@ class TestSaleTemplate(object):
             Billing email:      abc@example.com
             Billing Street:     123 Fake St.
             Billing City:       Springfield
-            BIlling State:      OR
+            Billing State:      OR
             Billing ZIP:        97477
             Billing Card No.:   ************5100
 

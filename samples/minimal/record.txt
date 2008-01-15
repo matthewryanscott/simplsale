@@ -8,7 +8,7 @@ Billing amount:     ${f.billing_amount}
 Billing email:      ${f.billing_email}
 Billing Street:     ${f.billing_street}
 Billing City:       ${f.billing_city}
-BIlling State:      ${f.billing_state}
+Billing State:      ${f.billing_state}
 Billing ZIP:        ${f.billing_zip}
 Billing Card No.:   ${f.billing_card_number}
 
