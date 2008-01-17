@@ -495,7 +495,7 @@ embed comma-separated values into your email template.
 
 
 Email headers
-~~~~~~~~~~~~~
+.............
 
 Begin the email template with email headers.  Email headers consist of the
 name of the header, followed by a colon, a space, and the value of the
@@ -532,7 +532,7 @@ Format email addresses in one of the following ways:
 
 
 Email body
-~~~~~~~~~~
+..........
 
 Separate the email header and the email body with a blank line.
 
@@ -542,7 +542,7 @@ after a successful transaction.
 
 
 Embedding field values
-~~~~~~~~~~~~~~~~~~~~~~
+......................
 
 For any field that is available on the `success.html` page, embed it in an
 email template by enclosing it within ``${f.`` and ``}``.  
@@ -566,7 +566,7 @@ email address::
 
 
 Embedding comma-separated values (CSV)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+......................................
 
 Embed a comma-separated string of values (usually within your `record.txt`
 template) by enclosing a comma-separated list of variable names, each
@@ -584,7 +584,7 @@ This is how it might render if the `notes` field was left empty::
 
 
 Advanced
-~~~~~~~~
+........
 
 SimplSale renders email templates using the `Mako
 <http://makotemplates.org/>`__ package.  You are free to use advanced
