@@ -290,7 +290,7 @@ billing_email (required)
 
 This field is used to send email to the customer upon transaction success.
 
-The customer should supply their email address, and your `receipt.txt`_ file
+The customer should supply their email address, and your `receipt.txt` file
 should direct a receipt email to that email address.
 
 Here is an example of this field::
@@ -413,7 +413,7 @@ Accessing transaction fields
 ............................
 
 Set the `id` of any tag to the name of a field that was included in the
-`index.html`_ template, and SimplSale will fill in the text of that tag with
+`index.html` template, and SimplSale will fill in the text of that tag with
 the value of that field.
 
 Note that while `billing_card_number` is available, by the time it reaches
