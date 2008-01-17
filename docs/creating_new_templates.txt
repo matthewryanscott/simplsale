@@ -14,13 +14,13 @@ scratch.
 Before continuing, be sure that SimplSale is installed, and that you know
 the directory in which to place new templates.
 
-..
-    Terminology
-    ===========
-..
-    * `Customer`: The person using a web browser to visit a SimplSale web site.
-..
-    * `User`: The person who is 
+Terminology
+===========
+
+* `Customer`: The person using a web browser to visit a SimplSale web site.
+
+* `User`: The person who is responsible for creating and deploying SimplSale
+  templates for customer use.
 
 
 View the samples
@@ -72,7 +72,7 @@ Your sale template will consist of the following parts:
 HTML templates
 ==============
 
-We designed the SimplSale HTML template format to be easily edited using
+We designed SimplSale's HTML template format to be easily edited using
 either a standard text editor, or a specialized HTML editor that supports
 adding custom tags to elements.
 
@@ -129,6 +129,10 @@ index.html
 
 The `index.html` file is rendered when a customer first visits the URL
 associated with your sale template.
+
+This file is also centric to the sale template, in that it defines the set
+of all field names used across the sale template, and the set of required
+field names.
 
 
 JavaScript helpers
@@ -478,23 +482,169 @@ transaction.
 Email templates
 ===============
 
+Like the HTML template format, we designed SimplSale's email template format
+to be easily edited using a standard text editor.
+
 
 Common aspects
 --------------
+
+The same field values and same template engine are used for each email
+template.  You can embed field values into your email template, and you can
+embed comma-separated values into your email template.
+
+
+Email headers
+~~~~~~~~~~~~~
+
+Begin the email template with email headers.  Email headers consist of the
+name of the header, followed by a colon, a space, and the value of the
+header.
+
+An empty line separates the email header from the email body.
+
+In each email template, include at least the following headers:
+
+* `From` header, containing one and only one email address.
+
+* `To` header, containing at least one email address.
+
+* `Subject` header, containing the desired subject of the email.
+
+Some common optional headers:
+
+* `Cc`, similar to `To`, containing at least one email address to
+  carbon-copy.
+
+* `Bcc`, similar to `Cc`, except that recipients do not see the `Bcc` header
+  in the copy that is delivered to their email client.
+
+Format email addresses in one of the following ways:
+
+* Email address only.  Here is an example of a `Cc` header::
+
+    Cc: sales@example.com
+
+* Description with angle-bracket-enclosed email address.  Here is an example
+  of a `From` header::
+
+    From: ExampleCo Sales <sales@example.com>
+
+
+Email body
+~~~~~~~~~~
+
+Separate the email header and the email body with a blank line.
+
+The email template body's text formatting determines the exact formatting of
+the text in the resulting email when the template is rendered and delivered
+after a successful transaction.
+
+
+Embedding field values
+~~~~~~~~~~~~~~~~~~~~~~
+
+For any field that is available on the `success.html` page, embed it in an
+email template by enclosing it within ``${f.`` and ``}``.  
+
+For example, here is a `To` header line that includes the customer's billing
+email address::
+
+    To: ${f.billing_email}
+
+.. note::
+
+    If the field has an empty value, it will render as such.  For instance,
+    if you have an optional field called `food_preference`, you could
+    include it in your template as follows::
+
+        Your food preference is ${f.food_preference}.
+
+    If the field was not filled in, the resulting email would contain this::
+
+        Your food preference is .
+
+
+Embedding comma-separated values (CSV)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Embed a comma-separated string of values (usually within your `record.txt`
+template) by enclosing a comma-separated list of variable names, each
+prefixed with ``f.``, within ``${csv(`` and ``)}``.
+
+For example, here is a line that includes the customer's name, email
+address, purchase amount, and purchase description::
+
+    ${csv(f.billing_name, f.billing_email, f.billing_amount_price,
+          f.billing_amount_description, f.notes)}
+
+This is how it might render if the `notes` field was left empty::
+
+    Sam Jones,sjones@example.com,75.00,General,
+
+
+Advanced
+~~~~~~~~
+
+SimplSale renders email templates using the `Mako
+<http://makotemplates.org/>`__ package.  You are free to use advanced
+features documented at the Mako website in your email templates.
+
+.. admonition:: Why use Mako only with email templates?
+
+    SimplSale's HTML template system were designed by creating an idealized
+    HTML page structure that could be viewed in a web browser by itself,
+    without running SimplSale software.  It was also designed so that
+    requirements of the form are stored within the HTML template itself. The
+    HTML template parsing code was written to support that structure.
+
+    In contrast, the email parsing code needed to be easy-to-implement,
+    one-way (from successful transaction values to the email template, and
+    never in reverse), and support plain text files nicely.  Mako fit this
+    requirement nicely.
 
 
 receipt.txt
 -----------
 
+This template is intended for sending a receipt of the transaction to the
+customer.
+
+See the `template included with the "minimal" sample sale template
+<http://code.3purple.com/hg/repos.cgi/simplsale-dev/raw-file/tip/samples/minimal/receipt.txt>`__
+for an example.
+
 
 record.txt
 ----------
+
+This template is intended for sending a record of the transaction to the
+user.
+
+See the `template included with the "minimal" sample sale template
+<http://code.3purple.com/hg/repos.cgi/simplsale-dev/raw-file/tip/samples/minimal/record.txt>`__
+for an example.
 
 
 Including other web resources
 =============================
 
+You may find it useful to include images, JavaScript files, static HTML
+pages, or other resources alongside your sale template.
+
+One way to do so is to include those files in the `html` directory of the
+template.  SimplSale serves them up to customers as static files.
+
 
 Useful CSS classes
 ------------------
+
+When styling the pages in your sale template, there are some useful
+style you can use to enhance the usability of your form, such as
+highlighting required fields using a different color, and changing the color
+of error text.
+
+See the `CSS included with the "minimal" sample sale template
+<http://code.3purple.com/hg/repos.cgi/simplsale-dev/raw-file/tip/samples/minimal/html/css/master.css>`__
+for examples of such styles.
 
