@@ -1,0 +1,500 @@
+===============
+ | SimplSale |
+===============
+-----------------------------
+ Creating New Sale Templates
+-----------------------------
+
+.. contents::
+
+
+This document explains how to create new sale templates for SimplSale from
+scratch.
+
+Before continuing, be sure that SimplSale is installed, and that you know
+the directory in which to place new templates.
+
+..
+    Terminology
+    ===========
+..
+    * `Customer`: The person using a web browser to visit a SimplSale web site.
+..
+    * `User`: The person who is 
+
+
+View the samples
+================
+
+SimplSale comes with a sample sale template called `minimal`.
+
+It is an example of the minimal requirements of a sale template.  Studying
+it may help you learn about creating your own templates.
+
+You can also copy the `minimal` template and change it to your liking.
+
+
+Pilot vs. live
+==============
+
+It is useful to have a pilot server with which to test templates before you
+deploy them.
+
+Once you have fine-tuned the template and made sure everything works
+properly with the pilot server of your commerce service, copy the template
+from the pilot server's template directory to the live server's template
+directory.
+
+
+Basic structure of a sale template
+==================================
+
+Your sale template will consist of the following parts:
+
+* **html**: Directory containing the page templates and other web
+  resources needed by each page.  Two files are mandatory:
+
+  * **index.html**: HTML template used to show the commerce form.
+
+  * **success.html**: HTML template used to show details about a successul
+    transaction.
+
+  Other files may be included in this directory.  Those files will be served
+  up as static content.
+
+* **receipt.txt**: Email template used to send a receipt of the successful
+  transaction to the customer.
+
+* **record.txt**: Email template used to send a record of the successful
+  transaction to the party responsible for responding to the transaction.
+
+
+HTML templates
+==============
+
+We designed the SimplSale HTML template format to be easily edited using
+either a standard text editor, or a specialized HTML editor that supports
+adding custom tags to elements.
+
+We also made it easy for you to preview many aspects of your commerce page
+by simply viewing the source file in a browser, even before you upload it to
+a SimplSale server.
+
+When designing your HTML templates, keep in mind that the specifications
+below show you what is required by SimplSale to perform a commerce
+transaction.  You may surround those required elements by whatever design
+decisions you wish, using a combination of HTML and CSS.
+
+
+Common aspects
+--------------
+
+There are several things that are common between each HTML template.
+
+
+XHTML declarations
+..................
+
+We recommend that you use the XHTML 1.1 format, which is easily parsed by
+the XML software that transforms your template into a usable page. You are
+welcome to use other formats, but their use will not be documented here.
+
+To begin an XHTML 1.1 document, use this::
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+
+
+Commerce notice
+...............
+
+Within the `body` tag of each template, include the following `div`::
+
+    <div id="simplsale-commerce-notice" />
+
+When SimplSale renders a page, if the current commerce plugin has a notice
+attached to it, SimplSale will fill the text of this `div` with that notice.
+
+.. important::
+
+    Placing this in a prominent place in both of your HTML templates will
+    make sure you always know when you are using a pilot server and when you
+    are using a production server.
+    
+
+index.html
+----------
+
+The `index.html` file is rendered when a customer first visits the URL
+associated with your sale template.
+
+
+JavaScript helpers
+..................
+
+SimplSale includes some useful JavaScript helpers out of the box.  Include
+this snippet within the `head` tag of your template to activate them::
+
+    <script type="text/javascript" src="../../jquery.js"></script>
+    <script type="text/javascript" src="../../ss-ajax.js"></script>
+
+The JavaScript helpers do the following:
+
+* Disable the `submit` button until all fields marked as `required` are
+  filled in and the `billing_zip` field has at least five digits present.
+  This helps keep the customer from accidentally submitting a form with too
+  few fields filled out.
+
+* Upon clicking the `submit` button, changes the text of that button to
+  "Please Wait...", then disables the button.  This helps keep the customer
+  from accidentally double-clicking the submit button.
+
+.. note:: 
+
+    The JavaScript helpers are not required, merely recommended.  Customers
+    whose browsers have JavaScript turned off may still use your form,
+    unless your page requires your own custom scripts to work properly.
+
+
+Sale form
+.........
+
+When creating the `form` tag for your sale form, create it as follows::
+
+    <form method="post" action="" id="simplsale-form">
+
+.. note::
+
+    You may add additional attributes to the form as needed, but the three
+    attributes shown above must be present.
+
+
+Form errors
+~~~~~~~~~~~
+
+Include a tag with `id` set to `form-errors`, such as the following::
+
+    <span id="form-errors" />
+
+When an error occurs during form submission (such as a message from your
+commerce partner's server) SimplSale will include the text of that error in
+this tag.
+
+
+Fields in general
+~~~~~~~~~~~~~~~~~
+
+Choose a Python-friendly name for each field in your form:
+
+* The name may contain uppercase letters, lowercase letters, numbers, or
+  underscores.
+
+* The name is case-sensitive.
+
+* The name must not begin with a number.
+
+Set the `id` attribute of the field's input tag to the name of the field.
+
+If the field is required, set the `class` attribute of that input tag to
+`required` as in this example::
+
+    <input type="text" name="billing_name" class="required" value="" />
+
+If the `class` attribute is already set, add `required` to it, separating it
+from the previous class name with a space::
+
+    <input type="text" name="billing_name" class="important required"
+           value="" />
+
+
+Required fields
+~~~~~~~~~~~~~~~
+
+The following fields are required on all SimplSale forms, and their
+corresponding input tags should have the `class` attribute set to `required`
+as noted above:
+
+* `billing_amount`
+* `billing_email_address`
+* `billing_name`
+* `billing_street`
+* `billing_zip`
+* `billing_card_number`
+* `billing_expiration_month` and `billing_expiration_year`
+* `billing_cvv2`
+
+Detailed explanations of these fields are described below.
+
+
+Field errors
+~~~~~~~~~~~~
+
+For each required field, include a tag for each field containing an error
+message that should show up if the customer submitted a form without a
+proper value in the field.
+
+Set the `id` attribute of the tag to the name of the field followed by
+``-errors``.  For example, here is a field error tag for the
+`billing_card_number` field::
+
+    <span id="billing_card_number-errors">
+        Please enter your card number.
+    </span>
+
+When creating a field error tag for the expiration date, treat the
+expiration date as one field named `billing_expiration`::
+
+    <span id="billing_expiration-errors">
+        Please select your complete card expiration date.
+    </span>
+
+
+billing_amount (required)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Include a `select` tag named `billing_amount` to allow the customer to
+choose a purchase option.
+
+For each `option` tag that does not pertain to a purchase option, make the
+`value` attribute for that tag empty.  Include text of your choice within
+the tag, such as ``"(Select one)"``.
+
+For each `option` tag that corresponds to a purchase option, set the `value`
+attribute for that tag to a string containing the following, and include
+text of your choice within the tag:
+
+1. `Purchase amount` in US dollars, with cents.
+
+2. A space.
+
+3. `Unique description` of the purchase option.
+
+Here is an example of selling tickets at a play::
+
+    <select name="billing_amount" class="required">
+        <option value="">(Select seating)</option>
+        <option value="100.00 Front Row">Front Row Seating ($100)</option>
+        <option value="75.00 General">General Seating ($75)</option>
+    </select>
+
+.. note::
+
+    SimplSale does not currently support the use of any other type of tag
+    other than `select` for the `billing_amount` field.
+
+
+billing_email (required)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This field is used to send email to the customer upon transaction success.
+
+The customer should supply their email address, and your `receipt.txt`_ file
+should direct a receipt email to that email address.
+
+Here is an example of this field::
+
+    <input type="text" name="billing_email" class="required" value="" />
+
+
+billing_name (required)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This field is sent to your commerce partner during a transaction attempt,
+for fraud prevention.
+
+The customer should supply the name of the credit card account, as it
+appears on the card.
+
+Here is an example of this field::
+
+    <input type="text" name="billing_name" class="required" value="" />
+
+
+billing_street (required)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This field is sent to your commerce partner during a transaction attempt,
+for fraud prevention.
+
+The customer should supply the street address of the credit card account.
+
+Here is an example of this field::
+
+    <input type="text" name="billing_street" class="required" value="" />
+
+
+billing_zip (required)
+~~~~~~~~~~~~~~~~~~~~~~
+
+This field is sent to your commerce partner during a transaction attempt,
+for fraud prevention.
+
+The customer should supply the ZIP code of the credit card account.
+
+Here is an example of this field::
+
+    <input type="text" name="billing_zip" class="required" value="" />
+
+
+billing_card_number (required)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The customer should supply their credit card account number.
+
+Here is an example of this field::
+
+    <input type="text" name="billing_card_number" class="required" 
+           value="" />
+
+
+billing_expiration_month and billing_expiration_year (required)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The customer should supply their credit card expiration date as two digits
+representing the expiration month, and the last two digits of the expiration
+year.
+
+Here is an example of using `input` tags for the expiration date::
+
+    <input type="text" name="billing_expiration_month" class="required" 
+           value="" />
+
+    <input type="text" name="billing_expiration_year" class="required" 
+           value="" />
+
+The above can be cumbersome for the customer, so you may also use `select`
+tags. When you do so, SimplSale fills in the `option` tags for you; all you
+should include is enough options to satisfy your need to preview the
+template before serving it using SimplSale.
+
+Here is an example of using `select` tags for the expiration date::
+
+    <select name="billing_expiration_month" class="required">
+        <option value="01">01 (January)</option>
+    </select>
+
+    <select name="billing_expiration_year" class="required">
+        <option value="09">09 (2009)</option>
+    </select>
+
+Remember, when creating a field error tag for the expiration date, treat the
+expiration date as one field named `billing_expiration`::
+
+    <span id="billing_expiration-errors">
+        Please select your complete card expiration date.
+    </span>
+
+
+billing_cvv2 (required)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This field is sent to your commerce partner during a transaction attempt,
+for fraud prevention.
+
+The CVV2 code is a card verification code, and is typically printed as a
+three-digit number on the back of credit cards, to the right of the
+signature area.
+
+Here is an example of this field::
+
+    <input type="text" name="billing_cvv2" class="required" value="" />
+
+
+success.html
+------------
+
+The `success.html` file is rendered when a customer initiates a transaction
+and the transaction succeeds.
+
+
+Accessing transaction fields
+............................
+
+Set the `id` of any tag to the name of a field that was included in the
+`index.html`_ template, and SimplSale will fill in the text of that tag with
+the value of that field.
+
+Note that while `billing_card_number` is available, by the time it reaches
+this template it has been obscured so that only the last four digits are
+visible.
+
+Here is an example of showing the `billing_city` field::
+
+    <p>Billing city: <span id="billing_city">Anytown</span></p>
+
+
+transaction_number (required)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SimplSale obtains a reference number for the successful transaction from
+your commerce partner.  It makes this number available in this template
+using the `transaction_number` name.
+
+Include a tag whose `id` is set to `transaction_number`, just as you would
+include other fields as noted above.
+
+.. important::
+
+    If you do not include a transaction number, and for some reason an email
+    is not delivered, the customer will have no record of the transaction
+    available to them other than by inspecting the URL.  Remember to include
+    this!
+
+
+billing_amount_description and billing_amount_price
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SimplSale splits the selected `billing_amount` into two more values:
+
+* `billing_amount_description` contains the description that you gave to the
+  item the customer selected.
+
+* `billing_amount_price` contains the price that you gave to the item.
+
+Here is an example of using these values::
+
+    <p>
+        You purchased a ticket for
+        "<span id="billing_amount_description">somewhere</span>"
+        for $<span id="billing_amount_price">123.45</span>.
+    </p>
+
+
+Email notice
+............
+
+You should add a `div` tag to your template as follows, usually after
+providing any other information about the transaction that you choose to::
+
+    <div id="simplsale-email-notice">Email notice here.</div>
+
+The email plugin your SimplSale server uses will replace the contents of
+this tag with a message about email delivery associated with the successful
+transaction.
+
+
+Email templates
+===============
+
+
+Common aspects
+--------------
+
+
+receipt.txt
+-----------
+
+
+record.txt
+----------
+
+
+Including other web resources
+=============================
+
+
+Useful CSS classes
+------------------
+

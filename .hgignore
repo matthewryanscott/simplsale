@@ -9,3 +9,4 @@ develop-eggs/*
 bin/*
 playground/*
 simplsale-bootstrap.py
+docs.out/*
