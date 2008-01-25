@@ -3,3 +3,7 @@
 ===========
 
 Please see `<trac/>`__.
+
+Available documents:
+
+* `<creating_new_templates.txt>`__
