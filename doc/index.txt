@@ -1,0 +1,5 @@
+===========
+ SimplSale
+===========
+
+Please see `<trac/>`__.
